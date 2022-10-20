@@ -21,6 +21,9 @@ public class Player : MonoBehaviour
         var inputVector = _inputService.Axis;
         var movementVector = ConvertDirection(inputVector);
         
+        movementVector.Normalize();
+        movementVector += Physics.gravity;
+        
         _characterMovement.Move(movementVector);
         
         if (movementVector!= Vector3.zero)
