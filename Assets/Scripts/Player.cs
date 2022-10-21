@@ -19,15 +19,15 @@ public class Player : MonoBehaviour
     private void Update()
     {
         var inputVector = _inputService.Axis;
-        var movementVector = ConvertDirection(inputVector);
-        
-        movementVector.Normalize();
-        movementVector += Physics.gravity;
+        var movementVector = ConvertDirection(inputVector.normalized);
+
+        _characterMovement.Move(Physics.gravity);
+
+        if (movementVector == Vector3.zero) 
+            return;
         
         _characterMovement.Move(movementVector);
-        
-        if (movementVector!= Vector3.zero)
-            transform.forward = movementVector;
+        transform.forward = movementVector;
     }
     
     private static Vector3 ConvertDirection(Vector2 inputDirection) => 

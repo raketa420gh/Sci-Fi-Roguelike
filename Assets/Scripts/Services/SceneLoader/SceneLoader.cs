@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,28 +16,28 @@ public class SceneLoader
         _screenFader = screenFader;
     }
 
-    public void RestartScene() => 
-        LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+    public void RestartScene(Action onLoaded = null) => 
+        LoadSceneAsync(SceneManager.GetActiveScene().buildIndex, onLoaded);
     
-    public void LoadScene(string sceneName) => 
-        LoadSceneAsync(sceneName);
+    public void LoadScene(string sceneName, Action onLoaded = null) => 
+        LoadSceneAsync(sceneName, onLoaded);
 
-    public void LoadNextScene()
+    public void LoadNextScene(Action onLoaded = null)
     {
         var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         var maxSceneIndex = SceneManager.sceneCountInBuildSettings;
 
         if (currentSceneIndex < maxSceneIndex)
-            LoadSceneAsync(currentSceneIndex + 1);
+            LoadSceneAsync(currentSceneIndex + 1, onLoaded);
         
         if (currentSceneIndex == maxSceneIndex)
         {
             Debug.Log("Last scene");
-            LoadSceneAsync(0);
+            LoadSceneAsync(0, onLoaded);
         }
     }
 
-    private async Task LoadSceneAsync(string sceneName)
+    private async Task LoadSceneAsync(string sceneName, Action onLoaded = null)
     {
         isLoading = true;
         
@@ -55,7 +56,7 @@ public class SceneLoader
             await UniTask.Yield();
 
         async.allowSceneActivation = true;
-
+        
         waitFading = true;
         
         _screenFader.FadeOut(() => waitFading = false);
@@ -63,10 +64,12 @@ public class SceneLoader
         while (waitFading)
             await UniTask.Yield();
 
-        isLoading = false; 
+        isLoading = false;
+        
+        onLoaded?.Invoke();
     }
     
-    private async Task LoadSceneAsync(int sceneIndex)
+    private async Task LoadSceneAsync(int sceneIndex, Action onLoaded = null)
     {
         isLoading = true;
         
@@ -94,5 +97,7 @@ public class SceneLoader
             await UniTask.Yield();
 
         isLoading = false; 
+        
+        onLoaded?.Invoke();
     }
 }

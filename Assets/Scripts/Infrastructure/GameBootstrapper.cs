@@ -1,13 +1,18 @@
 using UnityEngine;
+using Zenject;
 
 public class GameBootstrapper : MonoBehaviour
 {
     private Game _game;
+    private SceneLoader _sceneLoader;
 
-    private void Awake()
+    [Inject]
+    public void Construct(SceneLoader sceneLoader)
     {
-        _game = new Game();
-
+        _sceneLoader = sceneLoader;
+        
+        _game = new Game(_sceneLoader);
+        
         DontDestroyOnLoad(this);
     }
 }

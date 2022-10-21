@@ -10,6 +10,8 @@ public class CharacterMovement : MonoBehaviour
     private void Awake() => 
         _characterController = GetComponent<CharacterController>();
 
-    public void Move(Vector3 movementVector) => 
+    public void Move(Vector3 movementVector)
+    {
         _characterController.Move(movementVector * (Time.deltaTime * _movementSpeed));
+    }
 }

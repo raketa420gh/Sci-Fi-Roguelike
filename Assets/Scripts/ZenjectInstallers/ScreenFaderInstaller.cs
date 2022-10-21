@@ -7,7 +7,7 @@ public class ScreenFaderInstaller : MonoInstaller
     
     private void Bind()
     {
-        var screenFaderPrefab = Resources.Load<ScreenFader>("ScreenFader");
+        var screenFaderPrefab = Resources.Load<ScreenFader>("Prefabs/UI/ScreenFader");
         
         Container
             .BindInstance(Instantiate(screenFaderPrefab))
