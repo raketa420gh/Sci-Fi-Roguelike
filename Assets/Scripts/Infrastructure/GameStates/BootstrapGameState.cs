@@ -1,11 +1,11 @@
-using UnityEngine;
-
 public class BootstrapGameState : GameState
 {
+    private readonly Game _game;
     private readonly SceneLoader _sceneLoader;
     
     public BootstrapGameState(Game game, SceneLoader sceneLoader) : base(game)
     {
+        _game = game;
         _sceneLoader = sceneLoader;
     }
 
@@ -13,11 +13,11 @@ public class BootstrapGameState : GameState
     {
         base.Enter();
         
-        _sceneLoader.LoadScene(SceneNames.Initial, EnterLoadedScene);
+        _sceneLoader.LoadScene(SceneNames.Initial, OnInitialSceneLoaded);
     }
 
-    private void EnterLoadedScene()
+    private void OnInitialSceneLoaded()
     {
-        Debug.Log("Initial scene loaded");
+        _game.StateMachine.ChangeState(_game.LoadLevelState);
     }
 }

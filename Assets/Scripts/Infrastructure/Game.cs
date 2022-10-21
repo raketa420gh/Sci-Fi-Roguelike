@@ -4,12 +4,15 @@ public class Game
 {
     public StateMachine StateMachine;
     public BootstrapGameState BootstrapState;
+    public LoadLevelGameState LoadLevelState;
 
     private SceneLoader _sceneLoader;
+    private IGameFactory _gameFactory;
 
-    public Game(SceneLoader sceneLoader)
+    public Game(SceneLoader sceneLoader, IGameFactory gameFactory)
     {
         _sceneLoader = sceneLoader;
+        _gameFactory = gameFactory;
         
         InitializeStateMachine();
         
@@ -20,6 +23,7 @@ public class Game
     {
         StateMachine = new StateMachine();
         BootstrapState = new BootstrapGameState(this, _sceneLoader);
+        LoadLevelState = new LoadLevelGameState(this, _sceneLoader, _gameFactory);
         
         StateMachine.ChangeState(BootstrapState);
         
