@@ -17,10 +17,10 @@ public class LoadLevelGameState : GameState
     {
         base.Enter();
         
-        _sceneLoader.LoadScene(SceneNames.Sandbox, OnSandboxSceneLoaded);
+        _sceneLoader.LoadScene(SceneNames.Sandbox, OnGameSceneLoaded);
     }
 
-    private void OnSandboxSceneLoaded()
+    private void OnGameSceneLoaded()
     {
         var player = _gameFactory.CreatePlayerCharacter(Vector3.up);
 

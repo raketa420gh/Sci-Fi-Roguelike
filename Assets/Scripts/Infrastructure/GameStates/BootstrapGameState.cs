@@ -18,6 +18,6 @@ public class BootstrapGameState : GameState
 
     private void OnInitialSceneLoaded()
     {
-        _game.StateMachine.ChangeState(_game.LoadLevelState);
+        _game.StateMachine.ChangeState(_game.LoadProgressState);
     }
 }

@@ -4,16 +4,25 @@ public class Game
 {
     public StateMachine StateMachine;
     public BootstrapGameState BootstrapState;
+    public LoadProgressGameState LoadProgressState;
     public LoadLevelGameState LoadLevelState;
+    public GameLoopGameState GameLoopState;
 
-    private SceneLoader _sceneLoader;
-    private IGameFactory _gameFactory;
+    private readonly SceneLoader _sceneLoader;
+    private readonly IGameFactory _gameFactory;
+    private readonly IPersistentProgressService _progressService;
+    private readonly ISaveLoadService _saveLoadService;
 
-    public Game(SceneLoader sceneLoader, IGameFactory gameFactory)
+    public Game(SceneLoader sceneLoader, 
+        IGameFactory gameFactory, 
+        IPersistentProgressService progressService, 
+        ISaveLoadService saveLoadService)
     {
         _sceneLoader = sceneLoader;
         _gameFactory = gameFactory;
-        
+        _progressService = progressService;
+        _saveLoadService = saveLoadService;
+
         InitializeStateMachine();
         
         Debug.Log("Game state machine initialized");
@@ -23,7 +32,9 @@ public class Game
     {
         StateMachine = new StateMachine();
         BootstrapState = new BootstrapGameState(this, _sceneLoader);
+        LoadProgressState = new LoadProgressGameState(this, _progressService, _saveLoadService);
         LoadLevelState = new LoadLevelGameState(this, _sceneLoader, _gameFactory);
+        GameLoopState = new GameLoopGameState(this);
         
         StateMachine.ChangeState(BootstrapState);
         

@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 [RequireComponent(typeof(CharacterMovement))]
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, ISavableProgress
 {
     private CharacterMovement _characterMovement;
     private IInputService _inputService;
@@ -29,7 +30,17 @@ public class Player : MonoBehaviour
         _characterMovement.Move(movementVector);
         transform.forward = movementVector;
     }
-    
+
+    public void SaveProgress(PlayerProgress progress)
+    {
+        progress.WorldData.LevelName = SceneManager.GetActiveScene().name;
+    }
+
+    public void LoadProgress(PlayerProgress progress)
+    {
+        
+    }
+
     private static Vector3 ConvertDirection(Vector2 inputDirection) => 
         new (inputDirection.x, 0, inputDirection.y);
 }
