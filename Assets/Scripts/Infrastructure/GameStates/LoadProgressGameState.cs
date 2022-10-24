@@ -15,14 +15,11 @@ public class LoadProgressGameState : GameState
     {
         base.Enter();
         
-        //load progress or init new progress
-        InitializeNewProgress();
+        _progressService.Progress = 
+            _saveLoadService.LoadProgress() ?? InitializeNewProgress();
         
         _game.StateMachine.ChangeState(_game.LoadLevelState);
     }
-
-    private void LoadProgress() => 
-        _progressService.Progress = _saveLoadService.LoadProgress() ?? InitializeNewProgress();
 
     private PlayerProgress InitializeNewProgress() => 
         new PlayerProgress(SceneNames.Sandbox);

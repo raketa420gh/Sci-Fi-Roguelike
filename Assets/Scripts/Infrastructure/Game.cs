@@ -33,7 +33,7 @@ public class Game
         StateMachine = new StateMachine();
         BootstrapState = new BootstrapGameState(this, _sceneLoader);
         LoadProgressState = new LoadProgressGameState(this, _progressService, _saveLoadService);
-        LoadLevelState = new LoadLevelGameState(this, _sceneLoader, _gameFactory);
+        LoadLevelState = new LoadLevelGameState(this, _sceneLoader, _gameFactory, _progressService);
         GameLoopState = new GameLoopGameState(this);
         
         StateMachine.ChangeState(BootstrapState);
