@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Zenject;
 
 [RequireComponent(typeof(CharacterMovement))]
@@ -7,6 +6,7 @@ using Zenject;
 public class Player : MonoBehaviour, ISavableProgress
 {
     private CharacterMovement _characterMovement;
+    private PlayerWeaponSegment _weaponSegment;
     private IInputService _inputService;
 
     [Inject]
@@ -15,25 +15,40 @@ public class Player : MonoBehaviour, ISavableProgress
         _inputService = inputService;
 
         _characterMovement = GetComponent<CharacterMovement>();
+        _weaponSegment = GetComponentInChildren<PlayerWeaponSegment>();
     }
 
     private void Update()
     {
-        var inputVector = _inputService.Axis;
-        var movementVector = ConvertDirection(inputVector.normalized);
+        var inputMoveVector = _inputService.AxisMove;
+        var inputAimVector = _inputService.AxisAim;
+        
+        var moveVector = ConvertDirection(inputMoveVector.normalized);
+        var aimVector = ConvertDirection(inputAimVector.normalized);
+        var aimPoint = transform.position + aimVector;
 
         _characterMovement.Move(Physics.gravity);
 
-        if (movementVector == Vector3.zero) 
+        if (aimVector != Vector3.zero)
+        {
+            _weaponSegment.Rotatable.LookAtSmoothOnlyY(aimPoint, 0.1f);
+            _weaponSegment.StartFire();
+        }
+        else
+        {
+            _weaponSegment.StopFire();
+        }
+
+        if (moveVector == Vector3.zero) 
             return;
         
-        _characterMovement.Move(movementVector);
-        transform.forward = movementVector;
+        _characterMovement.Move(moveVector);
+        transform.forward = moveVector;
     }
 
     public void SaveProgress(PlayerProgress progress)
     {
-        progress.WorldData.LevelName = SceneManager.GetActiveScene().name;
+        //progress.WorldData.LevelName = SceneManager.GetActiveScene().name;
     }
 
     public void LoadProgress(PlayerProgress progress)
