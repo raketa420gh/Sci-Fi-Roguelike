@@ -24,9 +24,12 @@ public class GameFactory : IGameFactory
         return player;
     }
 
-    public void CreateHUD()
+    public HUD CreateHUD()
     {
-        var hud = _assetProvider.Instantiate("Prefabs/UI/HUD");
+        var hudPrefab = _assetProvider.Instantiate("Prefabs/UI/HUD");
+        var hud = hudPrefab.GetComponent<HUD>();
+
+        return hud;
     }
 
     public void Cleanup()

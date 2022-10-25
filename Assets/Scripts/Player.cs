@@ -1,13 +1,21 @@
+using System;
 using UnityEngine;
 using Zenject;
 
 [RequireComponent(typeof(CharacterMovement))]
+[RequireComponent(typeof(PlayerInteractionSource))]
 
 public class Player : MonoBehaviour, ISavableProgress
 {
+    public event Action<Player> OnCreated;
+    public event Action<Player> OnDead;
+
     private CharacterMovement _characterMovement;
+    private IInteractionSource _interactionSource;
     private PlayerWeaponSegment _weaponSegment;
     private IInputService _inputService;
+
+    public IInteractionSource InteractionSource => _interactionSource;
 
     [Inject]
     public void Construct(IInputService inputService)
@@ -15,16 +23,19 @@ public class Player : MonoBehaviour, ISavableProgress
         _inputService = inputService;
 
         _characterMovement = GetComponent<CharacterMovement>();
+        _interactionSource = GetComponent<IInteractionSource>();
         _weaponSegment = GetComponentInChildren<PlayerWeaponSegment>();
+    }
+
+    private void OnEnable()
+    {
+        OnCreated?.Invoke(this);
     }
 
     private void Update()
     {
-        var inputMoveVector = _inputService.AxisMove;
-        var inputAimVector = _inputService.AxisAim;
-        
-        var moveVector = ConvertDirection(inputMoveVector.normalized);
-        var aimVector = ConvertDirection(inputAimVector.normalized);
+        var moveVector = ConvertDirection(_inputService.AxisMove.normalized);
+        var aimVector = ConvertDirection(_inputService.AxisAim.normalized);
         var aimPoint = transform.position + aimVector;
 
         _characterMovement.Move(Physics.gravity);
@@ -35,15 +46,18 @@ public class Player : MonoBehaviour, ISavableProgress
             _weaponSegment.StartFire();
         }
         else
-        {
             _weaponSegment.StopFire();
+
+        if (moveVector != Vector3.zero)
+        {
+            _characterMovement.Move(moveVector);
+            transform.forward = moveVector;
         }
 
-        if (moveVector == Vector3.zero) 
-            return;
-        
-        _characterMovement.Move(moveVector);
-        transform.forward = moveVector;
+        if (_inputService.Interacted)
+        {
+            _interactionSource.Interact();
+        }
     }
 
     public void SaveProgress(PlayerProgress progress)
