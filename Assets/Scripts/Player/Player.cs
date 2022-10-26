@@ -29,6 +29,7 @@ public class Player : MonoBehaviour, ISavableProgress
 
     private void OnEnable()
     {
+        
         OnCreated?.Invoke(this);
     }
 

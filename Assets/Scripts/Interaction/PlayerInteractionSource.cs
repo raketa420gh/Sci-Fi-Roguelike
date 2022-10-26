@@ -19,7 +19,7 @@ public class PlayerInteractionSource : MonoBehaviour, IInteractionSource
 
         if (interactable != null)
         {
-            if (_currentInteractable != null)
+            if (_currentInteractable == null)
             {
                 _currentInteractable = interactable;
                 OnAvailable?.Invoke(true);
@@ -43,7 +43,7 @@ public class PlayerInteractionSource : MonoBehaviour, IInteractionSource
 
     public void Interact()
     {
-        _currentInteractable?.Interact(this);
+        _currentInteractable?.Interact();
         _currentInteractable = null;
         OnAvailable?.Invoke(false);
     }
