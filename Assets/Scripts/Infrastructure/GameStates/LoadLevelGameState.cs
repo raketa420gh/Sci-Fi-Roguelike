@@ -47,7 +47,8 @@ public class LoadLevelGameState : GameState
 
         cinemachineVirtualCamera.Follow = player.transform;
         cinemachineVirtualCamera.LookAt = player.transform;
-
-        _gameFactory.CreateHUD();
+        
+        var hud = _gameFactory.CreateHUD();
+        hud.Setup(player.InteractionSource);
     }
 }

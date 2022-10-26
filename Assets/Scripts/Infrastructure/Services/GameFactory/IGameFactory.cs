@@ -7,6 +7,6 @@ public interface IGameFactory
     List<ISavableProgress> ProgressWriters { get; }
     
     Player CreatePlayerCharacter(Vector3 position);
-    void CreateHUD();
+    HUD CreateHUD();
     void Cleanup();
 }
