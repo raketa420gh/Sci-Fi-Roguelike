@@ -2,10 +2,10 @@ using System;
 
 public interface IInventotyItem
 {
-    bool IsEquipped { get; }
     Type Type { get; }
-    int MaxAmountInInventorySlot { get; }
-    int Amount { get; }
+    int MaxItemsInInventorySlot { get; }
+    int Amount { get; set; }
+    bool IsEquipped { get; set; }
 
     IInventotyItem Clone();
 }

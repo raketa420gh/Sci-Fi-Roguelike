@@ -24,8 +24,6 @@ public class Game
         _saveLoadService = saveLoadService;
 
         InitializeStateMachine();
-        
-        Debug.Log("Game state machine initialized");
     }
 
     private void InitializeStateMachine()
