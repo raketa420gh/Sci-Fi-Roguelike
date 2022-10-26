@@ -2,10 +2,11 @@ using System;
 
 public interface IInventorySlot
 {
-    IInventotyItem Item { get; }
-    Type ItemType { get; }
     bool IsFull { get; }
     bool IsEmpty { get; }
+    
+    IInventotyItem Item { get; }
+    Type ItemType { get; }
     int Amount { get; }
     int Capacity { get; }
 
