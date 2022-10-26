@@ -36,7 +36,7 @@ public class InventoryWithSlots : IInventory
         _slots.FindAll(slot => !slot.IsEmpty && slot.ItemType == itemType).Select(slot => slot.Item).ToArray();
 
     public IInventotyItem[] GetEquippedItems() =>
-        _slots.FindAll(slot => !slot.IsEmpty && slot.Item.IsEquipped).Select(slot => slot.Item).ToArray();
+        _slots.FindAll(slot => !slot.IsEmpty && slot.Item.State.IsEquipped).Select(slot => slot.Item).ToArray();
     
     public int GetItemAmount(Type itemType) => 
         _slots.FindAll(slot => !slot.IsEmpty && slot.ItemType == itemType).Sum(slot => slot.Amount);
@@ -74,7 +74,7 @@ public class InventoryWithSlots : IInventory
             
             if (slot.Amount >= amountToRemove)
             {
-                slot.Item.Amount -= amountToRemove;
+                slot.Item.State.Amount -= amountToRemove;
                 
                 if (slot.Amount <= 0)
                     slot.Clear();
@@ -102,18 +102,23 @@ public class InventoryWithSlots : IInventory
         return item != null;
     }
 
+    public void TransitFromSlotToSlot(object sender, IInventorySlot fromSlot, IInventorySlot toSlot)
+    {
+        
+    }
+
     private bool TryToAddToSlot(object sender, IInventorySlot slot, IInventotyItem item)
     {
-        var isFits = slot.Amount + item.Amount <= item.MaxItemsInInventorySlot;
-        var amountToAdd = isFits ? item.Amount : item.MaxItemsInInventorySlot - slot.Amount;
-        var amountLeft = item.Amount - amountToAdd;
+        var isFits = slot.Amount + item.State.Amount <= item.Info.MaxItemsInSlot;
+        var amountToAdd = isFits ? item.State.Amount : item.Info.MaxItemsInSlot - slot.Amount;
+        var amountLeft = item.State.Amount - amountToAdd;
         var clonedItem = item.Clone();
-        clonedItem.Amount = amountToAdd;
+        clonedItem.State.Amount = amountToAdd;
         
         if (slot.IsEmpty)
             slot.SetItem(clonedItem);
         else
-            slot.Item.Amount += amountToAdd;
+            slot.Item.State.Amount += amountToAdd;
         
         Debug.Log($"Item added to inventory. Type = {item.Type}, amount = {amountToAdd}");
         OnItemAdded?.Invoke(sender, item, amountToAdd);
@@ -121,7 +126,7 @@ public class InventoryWithSlots : IInventory
         if (amountLeft <= 0)
             return true;
 
-        item.Amount = amountLeft;
+        item.State.Amount = amountLeft;
         
         return TryToAdd(sender, item);
     }
