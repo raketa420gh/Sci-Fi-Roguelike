@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 558380542377289151}
   - component: {fileID: 6523800956933067423}
   - component: {fileID: 2791734504778005576}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wheel_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1298,7 +1298,7 @@ GameObject:
   - component: {fileID: 6448835948455108051}
   - component: {fileID: 7094364600591787527}
   - component: {fileID: 7692569644335298267}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2577,7 +2577,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2318757811234897902}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2616,7 +2616,7 @@ GameObject:
   - component: {fileID: 820660948760653836}
   - component: {fileID: 6784213022348605199}
   - component: {fileID: 4240027870658400267}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2728,7 +2728,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2318757812406441263}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2768,7 +2768,7 @@ GameObject:
   - component: {fileID: 6534139242325389952}
   - component: {fileID: 7531787572997633501}
   - component: {fileID: 3058150384262631213}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WeaponSegment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4087,7 +4087,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8352836151744744087}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BaseSegment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4128,7 +4128,7 @@ GameObject:
   - component: {fileID: 4430233358239402941}
   - component: {fileID: 2557837018670989020}
   - component: {fileID: 894174559748678357}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wheel_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5412,7 +5412,7 @@ GameObject:
   - component: {fileID: 5729681815562460973}
   - component: {fileID: 7407716840621485139}
   - component: {fileID: 5901147952996523818}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wheel_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6696,7 +6696,7 @@ GameObject:
   - component: {fileID: 1504279767194688996}
   - component: {fileID: 5696490684168542573}
   - component: {fileID: 501393277305798336}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7976,7 +7976,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1609252993331944199}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MuzzlePoint
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
@@ -8012,7 +8012,7 @@ GameObject:
   - component: {fileID: 4772145490268123514}
   - component: {fileID: 7823169947614188099}
   - component: {fileID: 4877094008210890759}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
