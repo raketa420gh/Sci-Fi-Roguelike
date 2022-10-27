@@ -19,7 +19,8 @@ public class UIInventoryItem : UIItem
 
         Item = slot.Item;
         _imageIcon.sprite = Item.Info.SpriteIcon;
-
+        
+        _imageIcon.gameObject.SetActive(true);
         var textAmountEnabled = slot.Amount > 0;
         _textAmount.gameObject.SetActive(textAmountEnabled);
 

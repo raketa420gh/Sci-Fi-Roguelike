@@ -42,12 +42,25 @@ public class LoadLevelGameState : GameState
     {
         var player = _gameFactory.CreatePlayerCharacter(Vector3.up);
 
+        InitCameraFollow(player);
+        InitPlayerHUD(player);
+    }
+
+    private static void InitCameraFollow(Player player)
+    {
         var cinemachineVirtualCameraObject = Object.FindObjectOfType(typeof(CinemachineVirtualCamera));
         var cinemachineVirtualCamera = cinemachineVirtualCameraObject.GetComponent<CinemachineVirtualCamera>();
 
         cinemachineVirtualCamera.Follow = player.transform;
         cinemachineVirtualCamera.LookAt = player.transform;
-        
-        //_gameFactory.CreateHUD().Setup(player.InteractionSource);
+    }
+
+    private void InitPlayerHUD(Player player)
+    {
+        var hud = _gameFactory.CreateHUD();
+        hud.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
+        hud.UIPlayerInput.Setup(player.InteractionSource);
+        hud.UIPlayerInventory.CreateInventory();
+        hud.HidePlayerInventory();
     }
 }

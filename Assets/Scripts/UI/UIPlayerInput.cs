@@ -1,8 +1,7 @@
-using System;
 using SimpleInputNamespace;
 using UnityEngine;
 
-public class HUD : MonoBehaviour
+public class UIPlayerInput : UIPanel
 {
     [SerializeField] private ButtonInputUI _interactButton;
 

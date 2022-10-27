@@ -8,7 +8,7 @@ public class ItemJunk : IInventoryItem
 
     public ItemJunk(IInventoryItemInfo info)
     {
-        Info = Info;
+        Info = info;
         State = new InventoryItemState();
     }
     

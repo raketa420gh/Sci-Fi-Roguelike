@@ -4,7 +4,7 @@ public class InventorySlot : IInventorySlot
 {
     public IInventoryItem Item { get; private set; }
     public Type ItemType => Item.Type;
-    public bool IsFull => Amount == Capacity;
+    public bool IsFull => !IsEmpty && Amount == Capacity;
     public bool IsEmpty => Item == null;
     public int Amount => IsEmpty ? 0 :  Item.State.Amount;
     public int Capacity { get; private set; }

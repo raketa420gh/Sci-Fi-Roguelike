@@ -1,8 +1,7 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIInventoryTester
+public class UIInventoryCreator
 {
     private UIInventorySlot[] _uiSlots;
     private InventoryItemData _junkData;
@@ -10,7 +9,7 @@ public class UIInventoryTester
     
     public InventoryWithSlots Inventory { get; }
 
-    public UIInventoryTester(UIInventorySlot[] uiSlots, 
+    public UIInventoryCreator(UIInventorySlot[] uiSlots, 
         InventoryItemData junkData, 
         InventoryItemData pipeData)
     {
@@ -18,7 +17,7 @@ public class UIInventoryTester
         _junkData = junkData;
         _pipeData = pipeData;
 
-        Inventory = new InventoryWithSlots(15);
+        Inventory = new InventoryWithSlots(uiSlots.Length);
         Inventory.OnStateChanged += OnInventoryStateChanged;
     }
 
@@ -34,6 +33,11 @@ public class UIInventoryTester
             uiSlot.SetSlot(slot);
             uiSlot.Refresh();
         }
+    }
+
+    public void AddItemIntoSlot(IInventorySlot slot, IInventoryItem item)
+    {
+        Inventory.TryToAddToSlot(this, slot, item);
     }
 
     public void FillSlotsRandom()

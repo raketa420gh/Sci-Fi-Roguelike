@@ -8,7 +8,7 @@ public class ItemPipe : IInventoryItem
 
     public ItemPipe(IInventoryItemInfo info)
     {
-        Info = Info;
+        Info = info;
         State = new InventoryItemState();
     }
     
