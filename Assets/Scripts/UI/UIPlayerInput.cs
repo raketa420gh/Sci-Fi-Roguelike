@@ -4,6 +4,7 @@ using UnityEngine;
 public class UIPlayerInput : UIPanel
 {
     [SerializeField] private ButtonInputUI _interactButton;
+    [SerializeField] private ButtonInputUI _inventoryButton;
 
     private IInteractionSource _interactionSource;
 

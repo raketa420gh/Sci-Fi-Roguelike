@@ -29,7 +29,6 @@ public class Player : MonoBehaviour, ISavableProgress
 
     private void OnEnable()
     {
-        
         OnCreated?.Invoke(this);
     }
 
@@ -55,10 +54,8 @@ public class Player : MonoBehaviour, ISavableProgress
             transform.forward = moveVector;
         }
 
-        if (_inputService.Interacted)
-        {
+        if (_inputService.IsInteractButtonDown)
             _interactionSource.Interact();
-        }
     }
 
     public void SaveProgress(PlayerProgress progress)
