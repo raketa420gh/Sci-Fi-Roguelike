@@ -1,12 +1,12 @@
 using System;
 
-public class ItemJunk : IInventoryItem
+public class ItemPipe : IInventoryItem
 {
     public IInventoryItemInfo Info { get; }
     public IInventoryItemState State { get; }
     public Type Type => GetType();
 
-    public ItemJunk(IInventoryItemInfo info)
+    public ItemPipe(IInventoryItemInfo info)
     {
         Info = Info;
         State = new InventoryItemState();
@@ -14,7 +14,7 @@ public class ItemJunk : IInventoryItem
     
     public IInventoryItem Clone()
     {
-        var clonedItem = new ItemJunk(Info)
+        var clonedItem = new ItemPipe(Info)
         {
             State =
             {

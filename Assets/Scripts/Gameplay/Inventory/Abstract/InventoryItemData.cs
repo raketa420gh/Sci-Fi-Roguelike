@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Items", fileName = "ItemData", order = 51)]
-public class InventoryItemInfoData : ScriptableObject, IInventoryItemInfo
+public class InventoryItemData : ScriptableObject, IInventoryItemInfo
 {
     [SerializeField] private string _id = "0";
     [SerializeField] private string _title = "Title";

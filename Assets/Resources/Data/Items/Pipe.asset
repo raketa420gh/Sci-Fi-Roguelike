@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8415b01172d14e528c8f362a31bd84e0, type: 3}
-  m_Name: Junk
+  m_Name: Pipe
   m_EditorClassIdentifier: 
-  _id: 1
-  _title: Junk
-  _description: Just junk
-  _maxItemsInSlot: 100
-  _spriteIcon: {fileID: 21300000, guid: 381b429e58f0f984a827788e78839b0f, type: 3}
+  _id: 2
+  _title: Pipe
+  _description: Just pipe
+  _maxItemsInSlot: 20
+  _spriteIcon: {fileID: 21300000, guid: be6deb8bf525f96498b79add47297699, type: 3}

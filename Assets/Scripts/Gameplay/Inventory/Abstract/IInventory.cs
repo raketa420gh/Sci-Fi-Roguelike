@@ -6,12 +6,12 @@ public interface IInventory
     bool IsFull { get; }
 
     IInventorySlot[] GetAllSlots();
-    IInventotyItem GetItem(Type itemType);
-    IInventotyItem[] GetAllItems();
-    IInventotyItem[] GetAllItems(Type itemType);
-    IInventotyItem[] GetEquippedItems();
+    IInventoryItem GetItem(Type itemType);
+    IInventoryItem[] GetAllItems();
+    IInventoryItem[] GetAllItems(Type itemType);
+    IInventoryItem[] GetEquippedItems();
     int GetItemAmount(Type itemType);
-    bool TryToAdd(object sender, IInventotyItem item);
+    bool TryToAdd(object sender, IInventoryItem item);
     void Remove(object sender, Type itemType, int amount = 1);
-    bool HasItem(Type itemType, out IInventotyItem item);
+    bool HasItem(Type itemType, out IInventoryItem item);
 }

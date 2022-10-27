@@ -23,7 +23,7 @@ public class InventoryTester : MonoBehaviour
     {
         var rCount = Random.Range(1, 10);
 
-        var itemJunk = new ItemJunk(ScriptableObject.CreateInstance<InventoryItemInfoData>());
+        var itemJunk = new ItemJunk(ScriptableObject.CreateInstance<InventoryItemData>());
 
         _inventory.TryToAdd(this, itemJunk);
     }

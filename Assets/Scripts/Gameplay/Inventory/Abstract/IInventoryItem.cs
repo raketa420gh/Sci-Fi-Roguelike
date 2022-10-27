@@ -1,10 +1,10 @@
 using System;
 
-public interface IInventotyItem
+public interface IInventoryItem
 {
     IInventoryItemInfo Info { get; }
     IInventoryItemState State { get; }
     Type Type { get; }
 
-    IInventotyItem Clone();
+    IInventoryItem Clone();
 }
