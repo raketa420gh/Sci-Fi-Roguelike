@@ -1,28 +1,33 @@
-using System;
-using SimpleInputNamespace;
 using UnityEngine;
+using Zenject;
 
 public class HUD : MonoBehaviour
 {
-    [SerializeField] private ButtonInputUI _interactButton;
+    [SerializeField] private UIPlayerInput _uiPlayerInput;
+    [SerializeField] private UIPlayerInventory _uiPlayerInventory;
 
-    private IInteractionSource _interactionSource;
-
-    private void OnDisable()
-    {
-        if (_interactionSource != null)
-            _interactionSource.OnAvailable -= OnInteractionAvailable;
-    }
+    private IInputService _inputService;
+    private bool _isInventoryPanelActive;
     
-    public void Setup(IInteractionSource interactionSource)
-    {
-        _interactionSource = interactionSource;
+    public UIPlayerInput UIPlayerInput => _uiPlayerInput;
+    public UIPlayerInventory UIPlayerInventory => _uiPlayerInventory;
 
-        _interactionSource.OnAvailable += OnInteractionAvailable;
+    [Inject]
+    public void Construct(IInputService inputService)
+    {
+        _inputService = inputService;
     }
 
-    private void OnInteractionAvailable(bool isAvailable)
+    private void Update()
     {
-        _interactButton.gameObject.SetActive(isAvailable);
+        if(_inputService.IsInventoryButtonDown)
+            ToggleInventory(!_isInventoryPanelActive);
+    }
+
+    public void ToggleInventory(bool isActive)
+    {
+        _uiPlayerInventory.SetActive(isActive);
+        _uiPlayerInput.SetActive(!isActive);
+        _isInventoryPanelActive = isActive;
     }
 }
