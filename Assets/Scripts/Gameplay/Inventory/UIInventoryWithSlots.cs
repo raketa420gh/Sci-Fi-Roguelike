@@ -1,27 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIInventoryCreator
+public class UIInventoryWithSlots
 {
     private UIInventorySlot[] _uiSlots;
-    private InventoryItemData _junkData;
-    private InventoryItemData _pipeData;
     
     public InventoryWithSlots Inventory { get; }
 
-    public UIInventoryCreator(UIInventorySlot[] uiSlots, 
-        InventoryItemData junkData, 
-        InventoryItemData pipeData)
+    public UIInventoryWithSlots(UIInventorySlot[] uiSlots)
     {
         _uiSlots = uiSlots;
-        _junkData = junkData;
-        _pipeData = pipeData;
 
         Inventory = new InventoryWithSlots(uiSlots.Length);
         Inventory.OnStateChanged += OnInventoryStateChanged;
+        
+        Setup(Inventory);
     }
 
-    private void SetupUIInventory(InventoryWithSlots inventory)
+    private void Setup(InventoryWithSlots inventory)
     {
         var allSlots = inventory.GetAllSlots();
         var allSlotsCount = allSlots.Length;
@@ -35,12 +31,7 @@ public class UIInventoryCreator
         }
     }
 
-    public void AddItemIntoSlot(IInventorySlot slot, IInventoryItem item)
-    {
-        Inventory.TryToAddToSlot(this, slot, item);
-    }
-
-    public void FillSlotsRandom()
+    public void FillSlotsRandomJunk()
     {
         var allSlots = Inventory.GetAllSlots();
         var availableSlots = new List<IInventorySlot>(allSlots);
@@ -51,12 +42,7 @@ public class UIInventoryCreator
         {
             var filledSlot = AddRandomJunkIntoRandomSlot(availableSlots);
             availableSlots.Remove(filledSlot);
-
-            filledSlot = AddRandomPipeIntoRandomSlot(availableSlots);
-            availableSlots.Remove(filledSlot);
         }
-        
-        SetupUIInventory(Inventory);
     }
 
     private IInventorySlot AddRandomJunkIntoRandomSlot(List<IInventorySlot> slots)
@@ -65,28 +51,12 @@ public class UIInventoryCreator
         var rSlot = slots[rSlotIndex];
         var rCount = Random.Range(1, 20);
 
-        var junk = new ItemJunk(_junkData)
-        {
-            State = { Amount = rCount }
-        };
+        //var junk = new ItemJunk(_junkData)
+        //{
+       //     State = { Amount = rCount }
+        //};
 
-        Inventory.TryToAddToSlot(this, rSlot, junk);
-        
-        return rSlot;
-    }
-    
-    private IInventorySlot AddRandomPipeIntoRandomSlot(List<IInventorySlot> slots)
-    {
-        var rSlotIndex = Random.Range(0, slots.Count);
-        var rSlot = slots[rSlotIndex];
-        var rCount = Random.Range(1, 20);
-
-        var pipe = new ItemPipe(_pipeData)
-        {
-            State = { Amount = rCount }
-        };
-
-        Inventory.TryToAddToSlot(this, rSlot, pipe);
+        //Inventory.TryToAddToSlot(this, rSlot, junk);
         
         return rSlot;
     }

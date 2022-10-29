@@ -13,6 +13,7 @@ public class Player : MonoBehaviour, ISavableProgress
     private CharacterMovement _characterMovement;
     private IInteractionSource _interactionSource;
     private PlayerWeaponSegment _weaponSegment;
+    private IInventory _inventory;
     private IInputService _inputService;
 
     public IInteractionSource InteractionSource => _interactionSource;
@@ -58,14 +59,23 @@ public class Player : MonoBehaviour, ISavableProgress
             _interactionSource.Interact();
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        var pickableItem = other.GetComponent<IPickableItem>();
+        pickableItem?.Pick(_inventory);
+    }
+
+    public void SetupInventory(IInventory inventory)
+    {
+        _inventory = inventory;
+    }
+
     public void SaveProgress(PlayerProgress progress)
     {
-        //progress.WorldData.LevelName = SceneManager.GetActiveScene().name;
     }
 
     public void LoadProgress(PlayerProgress progress)
     {
-        
     }
 
     private static Vector3 ConvertDirection(Vector2 inputDirection) => 

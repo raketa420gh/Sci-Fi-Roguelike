@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -8,6 +7,7 @@ public class HUD : MonoBehaviour
     [SerializeField] private UIPlayerInventory _uiPlayerInventory;
 
     private IInputService _inputService;
+    private bool _isInventoryPanelActive;
     
     public UIPlayerInput UIPlayerInput => _uiPlayerInput;
     public UIPlayerInventory UIPlayerInventory => _uiPlayerInventory;
@@ -21,18 +21,13 @@ public class HUD : MonoBehaviour
     private void Update()
     {
         if(_inputService.IsInventoryButtonDown)
-            ShowPlayerInventory();
+            ToggleInventory(!_isInventoryPanelActive);
     }
 
-    public void ShowPlayerInventory()
+    public void ToggleInventory(bool isActive)
     {
-        _uiPlayerInventory.SetActive(true);
-        _uiPlayerInput.SetActive(false);
-    }
-
-    public void HidePlayerInventory()
-    {
-        _uiPlayerInventory.SetActive(false);
-        _uiPlayerInput.SetActive(true);
+        _uiPlayerInventory.SetActive(isActive);
+        _uiPlayerInput.SetActive(!isActive);
+        _isInventoryPanelActive = isActive;
     }
 }
