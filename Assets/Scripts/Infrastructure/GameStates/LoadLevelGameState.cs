@@ -63,7 +63,6 @@ public class LoadLevelGameState : GameState
         hud.UIPlayerInventory.Setup();
         hud.ToggleInventory(false);
         
-        // к
         player.SetupInventory(hud.UIPlayerInventory.Inventory);
     }
 }
