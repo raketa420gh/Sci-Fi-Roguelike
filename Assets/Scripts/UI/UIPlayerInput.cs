@@ -16,12 +16,14 @@ public class UIPlayerInput : UIPanel
     public void Setup(IInteractionSource interactionSource)
     {
         _interactionSource = interactionSource;
-
         _interactionSource.OnAvailable += OnInteractionAvailable;
+
+        ToggleInteractButton(false);
     }
 
-    private void OnInteractionAvailable(bool isAvailable)
-    {
+    private void ToggleInteractButton(bool isAvailable) => 
         _interactButton.gameObject.SetActive(isAvailable);
-    }
+
+    private void OnInteractionAvailable(bool isAvailable) => 
+        ToggleInteractButton(isAvailable);
 }
