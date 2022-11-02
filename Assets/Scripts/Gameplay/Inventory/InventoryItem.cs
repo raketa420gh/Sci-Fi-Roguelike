@@ -12,16 +12,6 @@ public class InventoryItem : IInventoryItem
         State = new InventoryItemState();
     }
     
-    public IInventoryItem Clone()
-    {
-        var clonedItem = new ItemJunk(Info)
-        {
-            State =
-            {
-                Amount = State.Amount
-            }
-        };
-
-        return clonedItem;
-    }
+    public IInventoryItem Clone() => 
+        new InventoryItem(Info) { State = { Amount = State.Amount } };
 }

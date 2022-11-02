@@ -4,16 +4,18 @@ using Zenject;
 
 [RequireComponent(typeof(CharacterMovement))]
 [RequireComponent(typeof(PlayerInteractionSource))]
+[RequireComponent(typeof(PlayerWeaponSwitcher))]
 
-public class Player : MonoBehaviour, ISavableProgress
+public class Player : MonoBehaviour, ISavableProgress, IBuyer
 {
     public event Action<Player> OnCreated;
     public event Action<Player> OnDead;
 
     private CharacterMovement _characterMovement;
+    private PlayerWeaponSwitcher _weaponSwitcher;
     private IInteractionSource _interactionSource;
-    private PlayerWeaponSegment _weaponSegment;
     private IInventory _inventory;
+    private ICurrencyStorage _currencyStorage;
     private IInputService _inputService;
 
     public IInteractionSource InteractionSource => _interactionSource;
@@ -25,11 +27,13 @@ public class Player : MonoBehaviour, ISavableProgress
 
         _characterMovement = GetComponent<CharacterMovement>();
         _interactionSource = GetComponent<IInteractionSource>();
-        _weaponSegment = GetComponentInChildren<PlayerWeaponSegment>();
+        _weaponSwitcher = GetComponent<PlayerWeaponSwitcher>();
     }
 
     private void OnEnable()
     {
+        _currencyStorage = new CurrencyStorage(1000);
+        
         OnCreated?.Invoke(this);
     }
 
@@ -43,11 +47,11 @@ public class Player : MonoBehaviour, ISavableProgress
 
         if (aimVector != Vector3.zero)
         {
-            _weaponSegment.Rotatable.LookAtSmoothOnlyY(aimPoint, 0.1f);
-            _weaponSegment.StartFire();
+            _weaponSwitcher.Current.Rotatable.LookAtSmoothOnlyY(aimPoint, 0.1f);
+            _weaponSwitcher.Current.StartFire();
         }
         else
-            _weaponSegment.StopFire();
+            _weaponSwitcher.Current.StopFire();
 
         if (moveVector != Vector3.zero)
         {
@@ -57,6 +61,11 @@ public class Player : MonoBehaviour, ISavableProgress
 
         if (_inputService.IsInteractButtonDown)
             _interactionSource.Interact();
+        
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Single);
+        if(Input.GetKeyDown(KeyCode.Alpha2))
+            _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Double);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -70,6 +79,11 @@ public class Player : MonoBehaviour, ISavableProgress
         _inventory = inventory;
     }
 
+    public void SetupWeaponSwitcher(PlayerWeaponSwitcher weaponSwitcher)
+    {
+        _weaponSwitcher = weaponSwitcher;
+    }
+
     public void SaveProgress(PlayerProgress progress)
     {
     }
@@ -80,4 +94,10 @@ public class Player : MonoBehaviour, ISavableProgress
 
     private static Vector3 ConvertDirection(Vector2 inputDirection) => 
         new (inputDirection.x, 0, inputDirection.y);
+
+    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
+    {
+        _currencyStorage.ChangeAmount(-cost);
+        _inventory.TryToAdd(this, purchasedItem);
+    }
 }
