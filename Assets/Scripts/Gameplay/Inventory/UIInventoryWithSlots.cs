@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class UIInventoryWithSlots
 {
     private readonly UIInventorySlot[] _uiSlots;
@@ -27,10 +29,16 @@ public class UIInventoryWithSlots
             uiSlot.Refresh();
         }
     }
-    
+
     private void OnInventoryStateChanged(object sender)
     {
         foreach (var uiSlot in _uiSlots)
             uiSlot.Refresh();
+
+        if (_uiSlots[0].Slot.IsEmpty) 
+            return;
+        
+        if (_uiSlots[0].Slot.Item.Info.SlotType == SlotType.EquipmentWeapon)
+            Debug.Log("Weapon slot updated");
     }
 }

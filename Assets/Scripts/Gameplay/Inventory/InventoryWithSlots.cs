@@ -170,7 +170,7 @@ public class InventoryWithSlots : IInventory
         else
             slot.Item.State.Amount += amountToAdd;
         
-        Debug.Log($"Item added to inventory. Type = {item.Type}, amount = {amountToAdd}");
+        Debug.Log($"Item added to inventory slot. Item type = {item.Type}, amount = {amountToAdd}");
         OnItemAdded?.Invoke(sender, item, amountToAdd);
         OnStateChanged?.Invoke(sender);
 
