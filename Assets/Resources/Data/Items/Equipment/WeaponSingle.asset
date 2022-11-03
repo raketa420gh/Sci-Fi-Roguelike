@@ -15,6 +15,6 @@ MonoBehaviour:
   _id: 01
   _title: Weapon Single
   _description: Weapon Single
-  _maxItemsInSlot: 5
-  _slotType: 0
+  _maxItemsInSlot: 1
+  _slotType: 1
   _spriteIcon: {fileID: 21300000, guid: 9cee838bf4840b64f8e10d2e06d92f92, type: 3}
