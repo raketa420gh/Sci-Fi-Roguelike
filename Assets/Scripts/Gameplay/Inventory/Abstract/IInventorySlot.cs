@@ -3,6 +3,7 @@ using System;
 public interface IInventorySlot
 {
     IInventoryItem Item { get; }
+    SlotType SlotType { get; }
     Type ItemType { get; }
     bool IsFull { get; }
     bool IsEmpty { get; }

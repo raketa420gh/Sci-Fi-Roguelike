@@ -20,8 +20,18 @@ public class InventoryWithSlots : IInventory
 
         _slots = new List<IInventorySlot>(capacity);
 
-        for (var i = 0; i < capacity; i++)
-            _slots.Add(new InventorySlot());
+        var equipmentWeaponSlot = new InventorySlot(SlotType.EquipmentWeapon);
+        var equipmentShieldSlot = new InventorySlot(SlotType.EquipmentShield);
+        var equipmentMovementSlot = new InventorySlot(SlotType.EquipmentMovement);
+        var equipmentAlternativeSlot = new InventorySlot(SlotType.EquipmentAlternative);
+        
+        _slots.Add(equipmentWeaponSlot);
+        _slots.Add(equipmentShieldSlot);
+        _slots.Add(equipmentMovementSlot);
+        _slots.Add(equipmentAlternativeSlot);
+
+        for (var i = 4; i < capacity; i++)
+            _slots.Add(new InventorySlot(SlotType.Inventory));
     }
 
     public IInventorySlot[] GetAllSlots() =>
@@ -44,12 +54,16 @@ public class InventoryWithSlots : IInventory
 
     public bool TryToAdd(object sender, IInventoryItem item)
     {
-        var suitableSlot = _slots.Find(slot => !slot.IsEmpty && !slot.IsFull && slot.ItemType == item.Type);
+        var suitableSlot = _slots.Find(slot => 
+                !slot.IsEmpty 
+                && !slot.IsFull
+                && slot.ItemType == item.Type 
+                && slot.SlotType == SlotType.Inventory);
 
         if (suitableSlot != null)
             return TryToAddToSlot(sender, suitableSlot, item);
 
-        var emptySlot = _slots.Find(slot => slot.IsEmpty);
+        var emptySlot = _slots.Find(slot => slot.IsEmpty && slot.SlotType == SlotType.Inventory);
 
         if (emptySlot != null)
             return TryToAddToSlot(sender, emptySlot, item);
@@ -112,8 +126,11 @@ public class InventoryWithSlots : IInventory
         
         if (toSlot.IsFull)
             return;
-        
+
         if (!toSlot.IsEmpty && fromSlot.ItemType != toSlot.ItemType)
+            return;
+        
+        if (toSlot.SlotType != fromSlot.Item.Info.SlotType)
             return;
 
         var fromSlotCapacity = fromSlot.Capacity;

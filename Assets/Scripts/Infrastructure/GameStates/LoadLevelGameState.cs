@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -60,9 +61,9 @@ public class LoadLevelGameState : GameState
         var hud = _gameFactory.CreateHUD();
         hud.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
         hud.UIInputPanel.Setup(player.InteractionSource);
-        hud.UIInventoryPanel.Setup();
+        hud.UIInventory.Setup();
         hud.ToggleInventory(false);
         
-        player.SetupInventory(hud.UIInventoryPanel.Inventory);
+        player.SetupInventory(hud.UIInventory.Inventory);
     }
 }

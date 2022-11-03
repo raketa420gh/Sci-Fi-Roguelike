@@ -4,16 +4,14 @@ using Zenject;
 public class HUD : MonoBehaviour
 {
     [SerializeField] private UIPlayerInput _uiInputPanel;
-    [SerializeField] private UIPlayerInventory _uiInventoryPanel;
-    [SerializeField] private UIPlayerEquipment _uiEquipmentPanel;
+    [SerializeField] private UIPlayerInventory uiInventory;
 
     private Canvas _hudCanvas;
     private IInputService _inputService;
     private bool _isInventoryPanelActive;
     
     public UIPlayerInput UIInputPanel => _uiInputPanel;
-    public UIPlayerInventory UIInventoryPanel => _uiInventoryPanel;
-    public UIPanel UIEquipmentPanel => _uiEquipmentPanel;
+    public UIPlayerInventory UIInventory => uiInventory;
 
     [Inject]
     public void Construct(IInputService inputService) => 
@@ -30,8 +28,7 @@ public class HUD : MonoBehaviour
 
     public void ToggleInventory(bool isActive)
     {
-        _uiInventoryPanel.SetActive(isActive);
-        _uiEquipmentPanel.SetActive(isActive);
+        uiInventory.SetActive(isActive);
         _uiInputPanel.SetActive(!isActive);
         
         _isInventoryPanelActive = isActive;
