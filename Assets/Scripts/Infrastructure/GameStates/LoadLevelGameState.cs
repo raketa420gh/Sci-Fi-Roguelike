@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -41,22 +39,19 @@ public class LoadLevelGameState : GameState
 
     private void InitGameWorld()
     {
+        var cameraSwitcher = _gameFactory.CreateCameraSwitcher();
         var player = _gameFactory.CreatePlayerCharacter(Vector3.up);
-
-        InitCameraFollow(player);
-        InitPlayerHUD(player);
+        
+        player.SetupCameras(cameraSwitcher);
+        
+        SetupCameras(player, cameraSwitcher);
+        SetupHUD(player);
     }
 
-    private static void InitCameraFollow(Player player)
-    {
-        var cinemachineVirtualCameraObject = Object.FindObjectOfType(typeof(CinemachineVirtualCamera));
-        var cinemachineVirtualCamera = cinemachineVirtualCameraObject.GetComponent<CinemachineVirtualCamera>();
+    private void SetupCameras(Player player, CameraSwitcher cameraSwitcher) => 
+        player.SetupCameras(cameraSwitcher);
 
-        cinemachineVirtualCamera.Follow = player.transform;
-        cinemachineVirtualCamera.LookAt = player.transform;
-    }
-
-    private void InitPlayerHUD(Player player)
+    private void SetupHUD(Player player)
     {
         var hud = _gameFactory.CreateHUD();
         hud.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;

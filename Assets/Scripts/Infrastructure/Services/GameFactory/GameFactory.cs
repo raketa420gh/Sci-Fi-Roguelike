@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using Zenject;
 
@@ -32,6 +33,14 @@ public class GameFactory : IGameFactory
         return hud;
     }
 
+    public CameraSwitcher CreateCameraSwitcher()
+    {
+        var cameraSwitcherPrefab = _assetProvider.Instantiate("Prefabs/Camera/StateDrivenCamera");
+        var cameraSwitcher = cameraSwitcherPrefab.GetComponent<CameraSwitcher>();
+
+        return cameraSwitcher;
+    }
+    
     public void Cleanup()
     {
         ProgressReaders.Clear();

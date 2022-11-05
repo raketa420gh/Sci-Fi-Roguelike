@@ -1,16 +1,22 @@
+using Cinemachine;
 using UnityEngine;
 
 public class CameraSwitcher : MonoBehaviour
 {
+    [SerializeField] private CinemachineVirtualCamera _playerFollowCamera;
+    [SerializeField] private CinemachineVirtualCamera _inventoryCamera;
+
     private Animator _animator;
 
-    private void Awake() => _animator = GetComponent<Animator>();
+    public CinemachineVirtualCamera PlayerFollowCamera => _playerFollowCamera;
+    public CinemachineVirtualCamera InventoryCamera => _inventoryCamera;
+    
+    private void Awake() => 
+        _animator = GetComponent<Animator>();
 
-    public void SetPlayerFollowCamera() => _animator.Play(AnimationCameraStateNames.PlayerFollow);
+    public void SetPlayerFollowCamera() => 
+        _animator.Play(AnimationCameraStateNames.PlayerFollow);
 
-    public void SetSpotCamera(int spotNumber) => _animator.Play(AnimationCameraStateNames.Spot + $"{spotNumber}");
-
-    public void SetFinishCamera() => _animator.Play(AnimationCameraStateNames.Finish);
-
-    public void SetLoseCamera() => _animator.Play(AnimationCameraStateNames.Lose);
+    public void SetInventoryCamera() => 
+        _animator.Play(AnimationCameraStateNames.Inventory);
 }

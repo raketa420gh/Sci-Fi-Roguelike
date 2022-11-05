@@ -17,6 +17,9 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
     private IInventory _inventory;
     private ICurrencyStorage _currencyStorage;
     private IInputService _inputService;
+    private CameraSwitcher _cameraSwitcher;
+
+    private bool _isInventoryState = false;
 
     public IInteractionSource InteractionSource => _interactionSource;
 
@@ -62,6 +65,9 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         if (_inputService.IsInteractButtonDown)
             _interactionSource.Interact();
         
+        if (_inputService.IsInventoryButtonDown)
+            ToggleInventoryState(!_isInventoryState);
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
             _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Single);
         if(Input.GetKeyDown(KeyCode.Alpha2))
@@ -74,14 +80,26 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         pickableItem?.Pick(_inventory);
     }
 
-    public void SetupInventory(IInventory inventory)
-    {
+    public void SetupInventory(IInventory inventory) =>
         _inventory = inventory;
+
+    public void SetupCameras(CameraSwitcher cameraSwitcher)
+    {
+        _cameraSwitcher = cameraSwitcher;
+
+        var playerTransform = transform;
+        _cameraSwitcher.PlayerFollowCamera.Follow = playerTransform;
+        _cameraSwitcher.PlayerFollowCamera.LookAt = playerTransform;
+        _cameraSwitcher.InventoryCamera.Follow = playerTransform;
+        _cameraSwitcher.InventoryCamera.LookAt = playerTransform;
+        
+        _cameraSwitcher.SetPlayerFollowCamera();
     }
 
-    public void SetupWeaponSwitcher(PlayerWeaponSwitcher weaponSwitcher)
+    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
     {
-        _weaponSwitcher = weaponSwitcher;
+        _currencyStorage.ChangeAmount(-cost);
+        _inventory.TryToAdd(this, purchasedItem);
     }
 
     public void SaveProgress(PlayerProgress progress)
@@ -92,12 +110,16 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
     {
     }
 
+    private void ToggleInventoryState(bool isActive)
+    {
+        _isInventoryState = isActive;
+        
+        if (isActive)
+            _cameraSwitcher.SetInventoryCamera();
+        else
+            _cameraSwitcher.SetPlayerFollowCamera();
+    }
+
     private static Vector3 ConvertDirection(Vector2 inputDirection) => 
         new (inputDirection.x, 0, inputDirection.y);
-
-    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
-    {
-        _currencyStorage.ChangeAmount(-cost);
-        _inventory.TryToAdd(this, purchasedItem);
-    }
 }
