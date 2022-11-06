@@ -56,9 +56,9 @@ public class LoadLevelGameState : GameState
         var hud = _gameFactory.CreateHUD();
         hud.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
         hud.UIInputPanel.Setup(player.InteractionSource);
-        hud.UIInventory.Setup();
+        hud.UIUIInventoryController.Setup();
         hud.ToggleInventory(false);
         
-        player.SetupInventory(hud.UIInventory.Inventory);
+        player.SetupInventory(hud.UIUIInventoryController);
     }
 }

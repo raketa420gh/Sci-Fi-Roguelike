@@ -12,9 +12,10 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     {
         if (_allWeaponSegments.Count == 0)
             _allWeaponSegments.AddRange(GetComponentsInChildren<PlayerWeaponSegment>());
-        
-        SetWeaponSegment(_allWeaponSegments[0]);
     }
+
+    public void Disable() => 
+        DisableAllWeaponSegments();
 
     public void SetWeaponSegment(WeaponSegmentType type)
     {

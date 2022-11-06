@@ -1,17 +1,17 @@
 using System;
 
-public class WeaponSingleItem : IInventoryItem
+public class WeaponDoubleItem : IInventoryItem
 {
     public IInventoryItemInfo Info { get; }
     public IInventoryItemState State { get; }
     public Type Type => GetType();
 
-    public WeaponSingleItem(IInventoryItemInfo info)
+    public WeaponDoubleItem(IInventoryItemInfo info)
     {
         Info = info;
         State = new InventoryItemState();
     }
     
     public IInventoryItem Clone() => 
-        new WeaponSingleItem(Info) { State = { Amount = State.Amount } };
+        new WeaponDoubleItem(Info) { State = { Amount = State.Amount } };
 }

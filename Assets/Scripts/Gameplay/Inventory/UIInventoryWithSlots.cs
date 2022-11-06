@@ -1,7 +1,9 @@
-using UnityEngine;
+using System;
 
 public class UIInventoryWithSlots
 {
+    public event Action<Type> OnWeaponEquipped;
+    
     private readonly UIInventorySlot[] _uiSlots;
     
     public InventoryWithSlots Inventory { get; }
@@ -35,10 +37,20 @@ public class UIInventoryWithSlots
         foreach (var uiSlot in _uiSlots)
             uiSlot.Refresh();
 
-        if (_uiSlots[0].Slot.IsEmpty) 
-            return;
-        
-        if (_uiSlots[0].Slot.Item.Info.SlotType == SlotType.EquipmentWeapon)
-            Debug.Log("Weapon slot updated");
+        var weaponEquipmentSlot = _uiSlots[0];
+        var shieldEquipmentSlot = _uiSlots[1];
+        var movementEquipmentSlot = _uiSlots[2];
+        var alternativeEquipmentSlot = _uiSlots[3];
+
+        switch (weaponEquipmentSlot.Slot.IsEmpty)
+        {
+            case true: 
+                return;
+            case false:
+            {
+                OnWeaponEquipped?.Invoke(weaponEquipmentSlot.Slot.Item.GetType());
+                break;
+            }
+        }
     }
 }

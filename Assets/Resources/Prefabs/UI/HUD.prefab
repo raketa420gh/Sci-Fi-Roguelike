@@ -1277,7 +1277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiInputPanel: {fileID: 7033309927952312097}
-  uiInventory: {fileID: 7033309929184574282}
+  uiInventoryController: {fileID: 7033309929184574282}
 --- !u!114 &5934922835169863051
 MonoBehaviour:
   m_ObjectHideFlags: 0
