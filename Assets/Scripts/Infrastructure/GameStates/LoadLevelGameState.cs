@@ -43,14 +43,15 @@ public class LoadLevelGameState : GameState
         var cameraController = _gameFactory.CreateCameraController();
         var hud = _gameFactory.CreateHUD();
         
-        SetupCameraController(player, cameraController);
+        SetupCameraController(cameraController);
         SetupHUD(player, hud);
+        
+        player.Setup(hud.UIInventoryController, cameraController);
     }
 
-    private void SetupCameraController(Player player, CameraController cameraController)
+    private void SetupCameraController(CameraController cameraController)
     {
         cameraController.transform.parent = Object.FindObjectOfType(typeof(CamerasParentOnScene)).GameObject().transform;
-        player.SetupCameras(cameraController);
     }
 
     private void SetupHUD(Player player, HUD hud)
@@ -59,7 +60,5 @@ public class LoadLevelGameState : GameState
         hud.UIInputPanel.Setup(player.InteractionSource);
         hud.UIInventoryController.Setup();
         hud.ToggleInventory(false);
-        
-        player.SetupInventory(hud.UIInventoryController);
     }
 }

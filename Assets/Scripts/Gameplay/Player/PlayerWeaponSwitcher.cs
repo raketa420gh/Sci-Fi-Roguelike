@@ -35,5 +35,7 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     {
         foreach (var segment in _allWeaponSegments)
             segment.gameObject.SetActive(false);
+        
+        Current = null;
     }
 }

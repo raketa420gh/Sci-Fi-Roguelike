@@ -3,7 +3,8 @@ using System;
 public class UIInventoryWithSlots
 {
     public event Action<Type> OnWeaponEquipped;
-    
+    public event Action OnWeaponUnequipped; 
+
     private readonly UIInventorySlot[] _uiSlots;
     
     public InventoryWithSlots Inventory { get; }
@@ -45,12 +46,11 @@ public class UIInventoryWithSlots
         switch (weaponEquipmentSlot.Slot.IsEmpty)
         {
             case true: 
+                OnWeaponUnequipped?.Invoke();
                 return;
             case false:
-            {
                 OnWeaponEquipped?.Invoke(weaponEquipmentSlot.Slot.Item.GetType());
                 break;
-            }
         }
     }
 }

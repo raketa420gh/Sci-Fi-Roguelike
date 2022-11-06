@@ -6,7 +6,7 @@ using Zenject;
 [RequireComponent(typeof(PlayerInteractionSource))]
 [RequireComponent(typeof(PlayerWeaponSwitcher))]
 
-public class Player : MonoBehaviour, ISavableProgress, IBuyer
+public class Player : MonoBehaviour, IBuyer
 {
     public event Action<Player> OnCreated;
     public event Action<Player> OnDead;
@@ -19,11 +19,11 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
     private ICurrencyStorage _currencyStorage;
     private IInputService _inputService;
     private IInventory _inventory;
-    private UIInventoryController _uiUIInventoryController;
+    private UIInventoryController _uiInventoryController;
     private CameraController _cameraController;
-
-    private bool _isInventoryState = false;
-    private bool _canControl = true;
+    private StateMachine _stateMachine;
+    public ActiveState ActiveState;
+    public EquipmentState EquipmentState;
     
     public IInteractionSource InteractionSource => _interactionSource;
 
@@ -44,45 +44,16 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         OnCreated?.Invoke(this);
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if (_inputService.IsInventoryButtonDown)
-            ToggleInventoryState(!_isInventoryState);
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped -= OnWeaponEquipped;
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped -= OnWeaponUnequipped;
         
-        if (!_canControl)
-            return;
-        
-        var moveVector = ConvertDirection(_inputService.AxisMove.normalized);
-        var aimVector = ConvertDirection(_inputService.AxisAim.normalized);
-        var aimPoint = _body.position + aimVector;
-
-        _characterMovement.Move(Physics.gravity);
-
-        if (_weaponSwitcher.Current)
-        {
-            if (aimVector != Vector3.zero)
-            {
-                _weaponSwitcher.Current.Rotatable.LookAtSmoothOnlyY(aimPoint, 0.1f);
-                _weaponSwitcher.Current.StartFire();
-            }
-            else
-                _weaponSwitcher.Current.StopFire();
-        }
-
-        if (moveVector != Vector3.zero)
-        {
-            _characterMovement.Move(moveVector);
-            _body.forward = moveVector;
-        }
-
-        if (_inputService.IsInteractButtonDown)
-            _interactionSource.Interact();
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Single);
-        if(Input.GetKeyDown(KeyCode.Alpha2))
-            _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Double);
+        OnDead?.Invoke(this);
     }
+
+    private void Update() => 
+        _stateMachine.CurrentState.Update();
 
     private void OnTriggerEnter(Collider other)
     {
@@ -90,15 +61,51 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         pickableItem?.Pick(_inventory);
     }
 
-    public void SetupInventory(UIInventoryController uiInventoryController)
+    public void Setup(UIInventoryController inventoryController, CameraController cameraController)
     {
-        _uiUIInventoryController = uiInventoryController;
-        _inventory = uiInventoryController.UIInventoryWithSlots.Inventory;
-
-        uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
+        SetupInventory(inventoryController);
+        SetupCameras(cameraController);
+        
+        InitializeStates();
     }
 
-    public void SetupCameras(CameraController cameraController)
+    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
+    {
+        _currencyStorage.ChangeAmount(-cost);
+        _inventory.TryToAdd(this, purchasedItem);
+    }
+
+    private void InitializeStates()
+    {
+        _stateMachine = new StateMachine();
+
+        ActiveState = new ActiveState(this, 
+            _stateMachine,
+            _inputService, 
+            _interactionSource, 
+            _characterMovement, 
+            _weaponSwitcher, 
+            _body,
+            _cameraController);
+        
+        EquipmentState = new EquipmentState(this, 
+            _stateMachine,
+            _inputService,
+            _cameraController);
+        
+        _stateMachine.ChangeState(ActiveState);
+    }
+
+    private void SetupInventory(UIInventoryController uiInventoryController)
+    {
+        _uiInventoryController = uiInventoryController;
+        _inventory = uiInventoryController.UIInventoryWithSlots.Inventory;
+
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped += OnWeaponUnequipped;
+    }
+
+    private void SetupCameras(CameraController cameraController)
     {
         _cameraController = cameraController;
         
@@ -107,44 +114,8 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         _cameraController.InventoryCamera.Follow = _body;
         _cameraController.InventoryCamera.LookAt = _body;
         
-        _cameraController.SetPlayerFollowCamera();
+        InitializeStates();
     }
-
-    public void ToggleInputControls(bool isActive) => 
-        _canControl = isActive;
-
-    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
-    {
-        _currencyStorage.ChangeAmount(-cost);
-        _inventory.TryToAdd(this, purchasedItem);
-    }
-
-    public void SaveProgress(PlayerProgress progress)
-    {
-    }
-
-    public void LoadProgress(PlayerProgress progress)
-    {
-    }
-
-    private void ToggleInventoryState(bool isActive)
-    {
-        _isInventoryState = isActive;
-
-        if (isActive)
-        {
-            _cameraController.SetInventoryCamera();
-            _canControl = false;
-        }
-        else
-        {
-            _cameraController.SetPlayerFollowCamera();
-            _canControl = true;
-        }
-    }
-
-    private static Vector3 ConvertDirection(Vector2 inputDirection) => 
-        new (inputDirection.x, 0, inputDirection.y);
 
     private void OnWeaponEquipped(Type weaponType)
     {
@@ -154,4 +125,7 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         if (weaponType == typeof(WeaponDoubleItem))
             _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Double);
     }
+
+    private void OnWeaponUnequipped() => 
+        _weaponSwitcher.Disable();
 }

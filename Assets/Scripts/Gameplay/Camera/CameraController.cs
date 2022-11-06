@@ -17,6 +17,6 @@ public class CameraController : MonoBehaviour
     public void SetPlayerFollowCamera() => 
         _animator.Play(AnimationCameraStateNames.PlayerFollow);
 
-    public void SetInventoryCamera() => 
+    public void SetEquipmentCamera() => 
         _animator.Play(AnimationCameraStateNames.Inventory);
 }
