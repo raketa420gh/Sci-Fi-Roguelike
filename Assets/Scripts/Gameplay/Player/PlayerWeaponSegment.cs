@@ -1,4 +1,3 @@
-using System.Threading;
 using UnityEngine;
 
 [RequireComponent(typeof(Rotatable))]
@@ -6,25 +5,30 @@ using UnityEngine;
 
 public class PlayerWeaponSegment : MonoBehaviour
 {
+    [SerializeField] private WeaponSegmentType _weaponSegmentType;
+    
     private IRotatable _rotatable;
-    private IWeapon _weapon;
-    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private IWeapon[] _weapons;
+
+    public WeaponSegmentType Type => _weaponSegmentType;
 
     public IRotatable Rotatable => _rotatable;
 
     private void Awake()
     {
         _rotatable = GetComponent<IRotatable>();
-        _weapon = GetComponent<IWeapon>();
+        _weapons = GetComponents<IWeapon>();
     }
 
     public void StartFire()
     {
-        _weapon.StartFire();
+        foreach (var weapon in _weapons)
+            weapon.StartFire();
     }
 
     public void StopFire()
     {
-        _weapon.StopFire();
+        foreach (var weapon in _weapons)
+            weapon.StopFire();
     }
 }

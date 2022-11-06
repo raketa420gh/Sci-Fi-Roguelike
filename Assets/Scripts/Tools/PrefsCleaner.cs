@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PrefsCleaner
 {
-    [MenuItem("Tools/ClearPrefs")]
+    //[MenuItem("Tools/ClearPrefs")]
     public static void ClearPrefs()
     {
         PlayerPrefs.DeleteAll();

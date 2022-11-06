@@ -2,6 +2,10 @@ using System;
 
 public interface IInventory
 {
+    event Action<object, IInventoryItem, int> OnItemAdded;
+    event Action<object, Type, int> OnItemRemoved;
+    event Action<object> OnStateChanged;
+    
     int Capacity { get; set; }
     bool IsFull { get; }
 

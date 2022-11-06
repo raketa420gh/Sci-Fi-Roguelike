@@ -4,18 +4,27 @@ using Zenject;
 
 [RequireComponent(typeof(CharacterMovement))]
 [RequireComponent(typeof(PlayerInteractionSource))]
+[RequireComponent(typeof(PlayerWeaponSwitcher))]
 
-public class Player : MonoBehaviour, ISavableProgress
+public class Player : MonoBehaviour, IBuyer
 {
     public event Action<Player> OnCreated;
     public event Action<Player> OnDead;
 
-    private CharacterMovement _characterMovement;
-    private IInteractionSource _interactionSource;
-    private PlayerWeaponSegment _weaponSegment;
-    private IInventory _inventory;
-    private IInputService _inputService;
+    [SerializeField] private Transform _body;
 
+    private CharacterMovement _characterMovement;
+    private PlayerWeaponSwitcher _weaponSwitcher;
+    private IInteractionSource _interactionSource;
+    private ICurrencyStorage _currencyStorage;
+    private IInputService _inputService;
+    private IInventory _inventory;
+    private UIInventoryController _uiInventoryController;
+    private CameraController _cameraController;
+    private StateMachine _stateMachine;
+    public ActiveState ActiveState;
+    public EquipmentState EquipmentState;
+    
     public IInteractionSource InteractionSource => _interactionSource;
 
     [Inject]
@@ -25,39 +34,26 @@ public class Player : MonoBehaviour, ISavableProgress
 
         _characterMovement = GetComponent<CharacterMovement>();
         _interactionSource = GetComponent<IInteractionSource>();
-        _weaponSegment = GetComponentInChildren<PlayerWeaponSegment>();
+        _weaponSwitcher = GetComponent<PlayerWeaponSwitcher>();
     }
 
     private void OnEnable()
     {
+        _currencyStorage = new CurrencyStorage(1000);
+        
         OnCreated?.Invoke(this);
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        var moveVector = ConvertDirection(_inputService.AxisMove.normalized);
-        var aimVector = ConvertDirection(_inputService.AxisAim.normalized);
-        var aimPoint = transform.position + aimVector;
-
-        _characterMovement.Move(Physics.gravity);
-
-        if (aimVector != Vector3.zero)
-        {
-            _weaponSegment.Rotatable.LookAtSmoothOnlyY(aimPoint, 0.1f);
-            _weaponSegment.StartFire();
-        }
-        else
-            _weaponSegment.StopFire();
-
-        if (moveVector != Vector3.zero)
-        {
-            _characterMovement.Move(moveVector);
-            transform.forward = moveVector;
-        }
-
-        if (_inputService.IsInteractButtonDown)
-            _interactionSource.Interact();
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped -= OnWeaponEquipped;
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped -= OnWeaponUnequipped;
+        
+        OnDead?.Invoke(this);
     }
+
+    private void Update() => 
+        _stateMachine.CurrentState.Update();
 
     private void OnTriggerEnter(Collider other)
     {
@@ -65,19 +61,71 @@ public class Player : MonoBehaviour, ISavableProgress
         pickableItem?.Pick(_inventory);
     }
 
-    public void SetupInventory(IInventory inventory)
+    public void Setup(UIInventoryController inventoryController, CameraController cameraController)
     {
-        _inventory = inventory;
+        SetupInventory(inventoryController);
+        SetupCameras(cameraController);
+        
+        InitializeStates();
     }
 
-    public void SaveProgress(PlayerProgress progress)
+    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
     {
+        _currencyStorage.ChangeAmount(-cost);
+        _inventory.TryToAdd(this, purchasedItem);
     }
 
-    public void LoadProgress(PlayerProgress progress)
+    private void InitializeStates()
     {
+        _stateMachine = new StateMachine();
+
+        ActiveState = new ActiveState(this, 
+            _stateMachine,
+            _inputService, 
+            _interactionSource, 
+            _characterMovement, 
+            _weaponSwitcher, 
+            _body,
+            _cameraController);
+        
+        EquipmentState = new EquipmentState(this, 
+            _stateMachine,
+            _inputService,
+            _cameraController);
+        
+        _stateMachine.ChangeState(ActiveState);
     }
 
-    private static Vector3 ConvertDirection(Vector2 inputDirection) => 
-        new (inputDirection.x, 0, inputDirection.y);
+    private void SetupInventory(UIInventoryController uiInventoryController)
+    {
+        _uiInventoryController = uiInventoryController;
+        _inventory = uiInventoryController.UIInventoryWithSlots.Inventory;
+
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
+        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped += OnWeaponUnequipped;
+    }
+
+    private void SetupCameras(CameraController cameraController)
+    {
+        _cameraController = cameraController;
+        
+        _cameraController.PlayerFollowCamera.Follow = _body;
+        _cameraController.PlayerFollowCamera.LookAt = _body;
+        _cameraController.InventoryCamera.Follow = _body;
+        _cameraController.InventoryCamera.LookAt = _body;
+        
+        InitializeStates();
+    }
+
+    private void OnWeaponEquipped(Type weaponType)
+    {
+        if (weaponType == typeof(WeaponSingleItem))
+            _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Single);
+        
+        if (weaponType == typeof(WeaponDoubleItem))
+            _weaponSwitcher.SetWeaponSegment(WeaponSegmentType.Double);
+    }
+
+    private void OnWeaponUnequipped() => 
+        _weaponSwitcher.Disable();
 }

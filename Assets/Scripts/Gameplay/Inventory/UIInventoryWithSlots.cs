@@ -1,9 +1,11 @@
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
 public class UIInventoryWithSlots
 {
-    private UIInventorySlot[] _uiSlots;
+    public event Action<Type> OnWeaponEquipped;
+    public event Action OnWeaponUnequipped; 
+
+    private readonly UIInventorySlot[] _uiSlots;
     
     public InventoryWithSlots Inventory { get; }
 
@@ -31,39 +33,24 @@ public class UIInventoryWithSlots
         }
     }
 
-    public void FillSlotsRandomJunk()
-    {
-        var allSlots = Inventory.GetAllSlots();
-        var availableSlots = new List<IInventorySlot>(allSlots);
-
-        var filledSlots = 5;
-
-        for (int i = 0; i < filledSlots; i++)
-        {
-            var filledSlot = AddRandomJunkIntoRandomSlot(availableSlots);
-            availableSlots.Remove(filledSlot);
-        }
-    }
-
-    private IInventorySlot AddRandomJunkIntoRandomSlot(List<IInventorySlot> slots)
-    {
-        var rSlotIndex = Random.Range(0, slots.Count);
-        var rSlot = slots[rSlotIndex];
-        var rCount = Random.Range(1, 20);
-
-        //var junk = new ItemJunk(_junkData)
-        //{
-       //     State = { Amount = rCount }
-        //};
-
-        //Inventory.TryToAddToSlot(this, rSlot, junk);
-        
-        return rSlot;
-    }
-
     private void OnInventoryStateChanged(object sender)
     {
         foreach (var uiSlot in _uiSlots)
             uiSlot.Refresh();
+
+        var weaponEquipmentSlot = _uiSlots[0];
+        var shieldEquipmentSlot = _uiSlots[1];
+        var movementEquipmentSlot = _uiSlots[2];
+        var alternativeEquipmentSlot = _uiSlots[3];
+
+        switch (weaponEquipmentSlot.Slot.IsEmpty)
+        {
+            case true: 
+                OnWeaponUnequipped?.Invoke();
+                return;
+            case false:
+                OnWeaponEquipped?.Invoke(weaponEquipmentSlot.Slot.Item.GetType());
+                break;
+        }
     }
 }

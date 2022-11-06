@@ -16,4 +16,5 @@ MonoBehaviour:
   _title: Junk
   _description: Just junk
   _maxItemsInSlot: 100
-  _spriteIcon: {fileID: 21300000, guid: 381b429e58f0f984a827788e78839b0f, type: 3}
+  _slotType: 0
+  _spriteIcon: {fileID: 21300000, guid: cad932f398e96e64c9a9bc57638c5a73, type: 3}

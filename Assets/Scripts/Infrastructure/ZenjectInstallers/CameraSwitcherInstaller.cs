@@ -2,14 +2,14 @@ using Zenject;
 
 public class CameraSwitcherInstaller : MonoInstaller
 {
-    public CameraSwitcher CameraSwitcher;
+    public CameraController cameraController;
     
     public override void InstallBindings() => Bind();
     
     private void Bind()
     {
         Container
-            .BindInstance(CameraSwitcher)
+            .BindInstance(cameraController)
             .AsSingle()
             .NonLazy();
     }

@@ -1,4 +1,3 @@
-using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -41,29 +40,25 @@ public class LoadLevelGameState : GameState
     private void InitGameWorld()
     {
         var player = _gameFactory.CreatePlayerCharacter(Vector3.up);
-
-        InitCameraFollow(player);
-        InitPlayerHUD(player);
-    }
-
-    private static void InitCameraFollow(Player player)
-    {
-        var cinemachineVirtualCameraObject = Object.FindObjectOfType(typeof(CinemachineVirtualCamera));
-        var cinemachineVirtualCamera = cinemachineVirtualCameraObject.GetComponent<CinemachineVirtualCamera>();
-
-        cinemachineVirtualCamera.Follow = player.transform;
-        cinemachineVirtualCamera.LookAt = player.transform;
-    }
-
-    private void InitPlayerHUD(Player player)
-    {
+        var cameraController = _gameFactory.CreateCameraController();
         var hud = _gameFactory.CreateHUD();
-        hud.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
-        hud.UIPlayerInput.Setup(player.InteractionSource);
-        hud.UIPlayerInventory.Setup();
-        hud.ToggleInventory(false);
         
-        // к
-        player.SetupInventory(hud.UIPlayerInventory.Inventory);
+        SetupCameraController(cameraController);
+        SetupHUD(player, hud);
+        
+        player.Setup(hud.UIInventoryController, cameraController);
+    }
+
+    private void SetupCameraController(CameraController cameraController)
+    {
+        cameraController.transform.parent = Object.FindObjectOfType(typeof(CamerasParentOnScene)).GameObject().transform;
+    }
+
+    private void SetupHUD(Player player, HUD hud)
+    {
+        hud.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
+        hud.UIInputPanel.Setup(player.InteractionSource);
+        hud.UIInventoryController.Setup();
+        hud.ToggleInventory(false);
     }
 }
