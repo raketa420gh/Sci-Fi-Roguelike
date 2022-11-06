@@ -8,6 +8,6 @@ public interface IGameFactory
     
     Player CreatePlayerCharacter(Vector3 position);
     HUD CreateHUD();
-    CameraSwitcher CreateCameraSwitcher();
+    CameraController CreateCameraController();
     void Cleanup();
 }

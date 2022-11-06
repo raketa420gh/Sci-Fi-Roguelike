@@ -1,7 +1,7 @@
 using Cinemachine;
 using UnityEngine;
 
-public class CameraSwitcher : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera _playerFollowCamera;
     [SerializeField] private CinemachineVirtualCamera _inventoryCamera;

@@ -39,26 +39,27 @@ public class LoadLevelGameState : GameState
 
     private void InitGameWorld()
     {
-        var cameraSwitcher = _gameFactory.CreateCameraSwitcher();
         var player = _gameFactory.CreatePlayerCharacter(Vector3.up);
+        var cameraController = _gameFactory.CreateCameraController();
+        var hud = _gameFactory.CreateHUD();
         
-        player.SetupCameras(cameraSwitcher);
-        
-        SetupCameras(player, cameraSwitcher);
-        SetupHUD(player);
+        SetupCameraController(player, cameraController);
+        SetupHUD(player, hud);
     }
 
-    private void SetupCameras(Player player, CameraSwitcher cameraSwitcher) => 
-        player.SetupCameras(cameraSwitcher);
-
-    private void SetupHUD(Player player)
+    private void SetupCameraController(Player player, CameraController cameraController)
     {
-        var hud = _gameFactory.CreateHUD();
+        cameraController.transform.parent = Object.FindObjectOfType(typeof(CamerasParentOnScene)).GameObject().transform;
+        player.SetupCameras(cameraController);
+    }
+
+    private void SetupHUD(Player player, HUD hud)
+    {
         hud.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
         hud.UIInputPanel.Setup(player.InteractionSource);
-        hud.UIUIInventoryController.Setup();
+        hud.UIInventoryController.Setup();
         hud.ToggleInventory(false);
         
-        player.SetupInventory(hud.UIUIInventoryController);
+        player.SetupInventory(hud.UIInventoryController);
     }
 }

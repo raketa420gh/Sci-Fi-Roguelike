@@ -11,6 +11,8 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
     public event Action<Player> OnCreated;
     public event Action<Player> OnDead;
 
+    [SerializeField] private Transform _body;
+
     private CharacterMovement _characterMovement;
     private PlayerWeaponSwitcher _weaponSwitcher;
     private IInteractionSource _interactionSource;
@@ -18,11 +20,11 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
     private IInputService _inputService;
     private IInventory _inventory;
     private UIInventoryController _uiUIInventoryController;
-    private CameraSwitcher _cameraSwitcher;
+    private CameraController _cameraController;
 
     private bool _isInventoryState = false;
     private bool _canControl = true;
-
+    
     public IInteractionSource InteractionSource => _interactionSource;
 
     [Inject]
@@ -52,7 +54,7 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         
         var moveVector = ConvertDirection(_inputService.AxisMove.normalized);
         var aimVector = ConvertDirection(_inputService.AxisAim.normalized);
-        var aimPoint = transform.position + aimVector;
+        var aimPoint = _body.position + aimVector;
 
         _characterMovement.Move(Physics.gravity);
 
@@ -70,7 +72,7 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         if (moveVector != Vector3.zero)
         {
             _characterMovement.Move(moveVector);
-            transform.forward = moveVector;
+            _body.forward = moveVector;
         }
 
         if (_inputService.IsInteractButtonDown)
@@ -96,17 +98,16 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
         uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
     }
 
-    public void SetupCameras(CameraSwitcher cameraSwitcher)
+    public void SetupCameras(CameraController cameraController)
     {
-        _cameraSwitcher = cameraSwitcher;
-
-        var playerTransform = transform;
-        _cameraSwitcher.PlayerFollowCamera.Follow = playerTransform;
-        _cameraSwitcher.PlayerFollowCamera.LookAt = playerTransform;
-        _cameraSwitcher.InventoryCamera.Follow = playerTransform;
-        _cameraSwitcher.InventoryCamera.LookAt = playerTransform;
+        _cameraController = cameraController;
         
-        _cameraSwitcher.SetPlayerFollowCamera();
+        _cameraController.PlayerFollowCamera.Follow = _body;
+        _cameraController.PlayerFollowCamera.LookAt = _body;
+        _cameraController.InventoryCamera.Follow = _body;
+        _cameraController.InventoryCamera.LookAt = _body;
+        
+        _cameraController.SetPlayerFollowCamera();
     }
 
     public void ToggleInputControls(bool isActive) => 
@@ -132,12 +133,12 @@ public class Player : MonoBehaviour, ISavableProgress, IBuyer
 
         if (isActive)
         {
-            _cameraSwitcher.SetInventoryCamera();
+            _cameraController.SetInventoryCamera();
             _canControl = false;
         }
         else
         {
-            _cameraSwitcher.SetPlayerFollowCamera();
+            _cameraController.SetPlayerFollowCamera();
             _canControl = true;
         }
     }

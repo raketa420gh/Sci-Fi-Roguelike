@@ -33,10 +33,10 @@ public class GameFactory : IGameFactory
         return hud;
     }
 
-    public CameraSwitcher CreateCameraSwitcher()
+    public CameraController CreateCameraController()
     {
         var cameraSwitcherPrefab = _assetProvider.Instantiate("Prefabs/Camera/StateDrivenCamera");
-        var cameraSwitcher = cameraSwitcherPrefab.GetComponent<CameraSwitcher>();
+        var cameraSwitcher = cameraSwitcherPrefab.GetComponent<CameraController>();
 
         return cameraSwitcher;
     }
