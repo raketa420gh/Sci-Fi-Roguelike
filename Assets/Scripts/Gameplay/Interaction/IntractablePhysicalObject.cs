@@ -14,7 +14,7 @@ public class IntractablePhysicalObject : MonoBehaviour, IInteractable
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void Interact()
+    public void Interact(IInteractionSource interactionSource)
     {
         _rigidbody.AddForce(_vector * _force, ForceMode.Impulse);
     }

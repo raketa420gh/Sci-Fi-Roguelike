@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class InteractableDestroyObject : MonoBehaviour, IInteractable
 {
-    public void Interact()
+    public void Interact(IInteractionSource interactionSource)
     {
         Destroy(gameObject);
     }

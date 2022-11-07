@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -25,22 +26,33 @@ public class GameFactory : IGameFactory
         return player;
     }
 
+    public CameraController CreateCameraController()
+    {
+        var cameraControllerPrefab = _assetProvider.Instantiate("Prefabs/Camera/StateDrivenCamera");
+        cameraControllerPrefab.transform.parent = Object.FindObjectOfType(typeof(CamerasParentOnScene)).GameObject().transform;
+        var cameraSwitcher = cameraControllerPrefab.GetComponent<CameraController>();
+
+        return cameraSwitcher;
+    }
+
     public HUD CreateHUD()
     {
         var hudPrefab = _assetProvider.Instantiate("Prefabs/UI/HUD");
+        hudPrefab.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
         var hud = hudPrefab.GetComponent<HUD>();
 
         return hud;
     }
 
-    public CameraController CreateCameraController()
+    public UITradingPanel CreateTradingPanel(string path)
     {
-        var cameraSwitcherPrefab = _assetProvider.Instantiate("Prefabs/Camera/StateDrivenCamera");
-        var cameraSwitcher = cameraSwitcherPrefab.GetComponent<CameraController>();
+        var sellerPanelPrefab = _assetProvider.Instantiate(path);
+        sellerPanelPrefab.transform.parent = Object.FindObjectOfType(typeof(UIParentOnScene)).GameObject().transform;
+        var sellerPanel = sellerPanelPrefab.GetComponent<UITradingPanel>();
 
-        return cameraSwitcher;
+        return sellerPanel;
     }
-    
+
     public void Cleanup()
     {
         ProgressReaders.Clear();

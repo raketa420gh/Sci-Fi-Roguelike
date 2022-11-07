@@ -6,13 +6,15 @@ using Zenject;
 [RequireComponent(typeof(PlayerInteractionSource))]
 [RequireComponent(typeof(PlayerWeaponSwitcher))]
 
-public class Player : MonoBehaviour, IBuyer
+public class Player : MonoBehaviour
 {
     public event Action<Player> OnCreated;
     public event Action<Player> OnDead;
+    
+    public ActiveState ActiveState;
+    public EquipmentState EquipmentState;
 
     [SerializeField] private Transform _body;
-
     private CharacterMovement _characterMovement;
     private PlayerWeaponSwitcher _weaponSwitcher;
     private IInteractionSource _interactionSource;
@@ -20,12 +22,9 @@ public class Player : MonoBehaviour, IBuyer
     private IInputService _inputService;
     private IInventory _inventory;
     private UIInventoryController _uiInventoryController;
+    private HUD _hud;
     private CameraController _cameraController;
     private StateMachine _stateMachine;
-    public ActiveState ActiveState;
-    public EquipmentState EquipmentState;
-    
-    public IInteractionSource InteractionSource => _interactionSource;
 
     [Inject]
     public void Construct(IInputService inputService)
@@ -61,39 +60,33 @@ public class Player : MonoBehaviour, IBuyer
         pickableItem?.Pick(_inventory);
     }
 
-    public void Setup(UIInventoryController inventoryController, CameraController cameraController)
+    public void Setup(HUD hud, CameraController cameraController)
     {
-        SetupInventory(inventoryController);
+        SetupHUD(hud);
+        SetupInventory(hud.UIInventoryController);
         SetupCameras(cameraController);
         
         InitializeStates();
-    }
-
-    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
-    {
-        _currencyStorage.ChangeAmount(-cost);
-        _inventory.TryToAdd(this, purchasedItem);
     }
 
     private void InitializeStates()
     {
         _stateMachine = new StateMachine();
 
-        ActiveState = new ActiveState(this, 
-            _stateMachine,
-            _inputService, 
-            _interactionSource, 
-            _characterMovement, 
-            _weaponSwitcher, 
-            _body,
-            _cameraController);
+        ActiveState = new ActiveState(this, _stateMachine, _inputService, _interactionSource, 
+            _characterMovement, _weaponSwitcher, _body, _cameraController);
         
-        EquipmentState = new EquipmentState(this, 
-            _stateMachine,
-            _inputService,
-            _cameraController);
+        EquipmentState = new EquipmentState(this, _stateMachine, _inputService, _cameraController);
         
         _stateMachine.ChangeState(ActiveState);
+    }
+
+    private void SetupHUD(HUD hud)
+    {
+        _hud = hud;
+        hud.UIInputPanel.Setup(_interactionSource);
+        hud.UIInventoryController.Setup();
+        hud.ToggleInventory(false);
     }
 
     private void SetupInventory(UIInventoryController uiInventoryController)
@@ -128,4 +121,10 @@ public class Player : MonoBehaviour, IBuyer
 
     private void OnWeaponUnequipped() => 
         _weaponSwitcher.Disable();
+
+    private void OnTraderInteractionStarted() => 
+        _hud.UIInputPanel.SetActive(false);
+
+    private void OnTraderInteractionFinished() => 
+        _hud.UIInputPanel.SetActive(true);
 }

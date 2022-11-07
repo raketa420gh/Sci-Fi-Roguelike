@@ -6,6 +6,8 @@ using UnityEngine;
 public class PlayerInteractionSource : MonoBehaviour, IInteractionSource
 {
     public event Action<bool> OnAvailable;
+    public event Action OnTraderInteractionStarted;
+    public event Action OnTraderInteractionFinished;
 
     private SphereCollider _collider;
     private IInteractable _currentInteractable;
@@ -17,33 +19,40 @@ public class PlayerInteractionSource : MonoBehaviour, IInteractionSource
     {
         var interactable = other.GetComponent<IInteractable>();
 
-        if (interactable != null)
-        {
-            if (_currentInteractable == null)
-            {
-                _currentInteractable = interactable;
-                OnAvailable?.Invoke(true);
-            }
-        }
+        if (interactable == null) 
+            return;
+        
+        SelectInteractable(interactable);
     }
 
     private void OnTriggerExit(Collider other)
     {
         var interactable = other.GetComponent<IInteractable>();
-        
-        if (interactable != null)
-        {
-            if (interactable == _currentInteractable)
-            {
-                _currentInteractable = null;
-                OnAvailable?.Invoke(false);
-            }
-        }
+
+        if (interactable == null) 
+            return;
+        if (_currentInteractable == interactable)
+            DeselectInteractable();
     }
 
     public void Interact()
     {
-        _currentInteractable?.Interact();
+        _currentInteractable?.Interact(this);
+        
+        if (_currentInteractable as Trader)
+            OnTraderInteractionStarted?.Invoke();
+        
+        DeselectInteractable();
+    }
+
+    private void SelectInteractable(IInteractable interactable)
+    {
+        _currentInteractable = interactable;
+        OnAvailable?.Invoke(true);
+    }
+
+    private void DeselectInteractable()
+    {
         _currentInteractable = null;
         OnAvailable?.Invoke(false);
     }

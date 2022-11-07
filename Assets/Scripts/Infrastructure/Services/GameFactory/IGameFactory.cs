@@ -7,7 +7,8 @@ public interface IGameFactory
     List<ISavableProgress> ProgressWriters { get; }
     
     Player CreatePlayerCharacter(Vector3 position);
-    HUD CreateHUD();
     CameraController CreateCameraController();
+    HUD CreateHUD();
+    UITradingPanel CreateTradingPanel(string path);
     void Cleanup();
 }
