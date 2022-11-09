@@ -7287,6 +7287,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tradingPanelPath: Prefabs/UI/Trading/EquipmentTradingPanel
+  _productList:
+  - {fileID: 11400000, guid: bd1e5eca6eaa00643989d0bf9c248c41, type: 2}
+  - {fileID: 11400000, guid: fe61ad1fb5fbe5a448315943af7a1c91, type: 2}
 --- !u!54 &931977969
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -11088,7 +11091,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-14062
+  m_Name: pb_Mesh56064
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
