@@ -18,10 +18,11 @@ public class Player : MonoBehaviour
     private CharacterMovement _characterMovement;
     private PlayerWeaponSwitcher _weaponSwitcher;
     private IInteractionSource _interactionSource;
+    private IBuyer _buyer;
     private ICurrencyStorage _currencyStorage;
     private IInputService _inputService;
     private IInventory _inventory;
-    private UIInventoryController _uiInventoryController;
+    private UIEquipmentPanel _uiEquipmentPanel;
     private HUD _hud;
     private CameraController _cameraController;
     private StateMachine _stateMachine;
@@ -33,7 +34,11 @@ public class Player : MonoBehaviour
 
         _characterMovement = GetComponent<CharacterMovement>();
         _interactionSource = GetComponent<IInteractionSource>();
+        _buyer = GetComponent<IBuyer>();
         _weaponSwitcher = GetComponent<PlayerWeaponSwitcher>();
+
+        _buyer.OnTradingStarted += OnTradingStarted;
+        _buyer.OnTradingFinished += OnTradingFinished;
     }
 
     private void OnEnable()
@@ -45,8 +50,8 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped -= OnWeaponEquipped;
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped -= OnWeaponUnequipped;
+        _uiEquipmentPanel.UIInventoryWithSlots.OnWeaponEquipped -= OnWeaponEquipped;
+        _uiEquipmentPanel.UIInventoryWithSlots.OnWeaponUnequipped -= OnWeaponUnequipped;
         
         OnDead?.Invoke(this);
     }
@@ -63,7 +68,7 @@ public class Player : MonoBehaviour
     public void Setup(HUD hud, CameraController cameraController)
     {
         SetupHUD(hud);
-        SetupInventory(hud.UIInventoryController);
+        SetupInventory(hud.UIEquipmentPanel);
         SetupCameras(cameraController);
         
         InitializeStates();
@@ -85,17 +90,17 @@ public class Player : MonoBehaviour
     {
         _hud = hud;
         hud.UIInputPanel.Setup(_interactionSource);
-        hud.UIInventoryController.Setup();
-        hud.ToggleInventory(false);
+        hud.UIEquipmentPanel.Setup();
+        hud.ToggleEquipmentPanel(false);
     }
 
-    private void SetupInventory(UIInventoryController uiInventoryController)
+    private void SetupInventory(UIEquipmentPanel uiEquipmentPanel)
     {
-        _uiInventoryController = uiInventoryController;
-        _inventory = uiInventoryController.UIInventoryWithSlots.Inventory;
+        _uiEquipmentPanel = uiEquipmentPanel;
+        _inventory = uiEquipmentPanel.UIInventoryWithSlots.Inventory;
 
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped += OnWeaponUnequipped;
+        _uiEquipmentPanel.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
+        _uiEquipmentPanel.UIInventoryWithSlots.OnWeaponUnequipped += OnWeaponUnequipped;
     }
 
     private void SetupCameras(CameraController cameraController)
@@ -122,9 +127,14 @@ public class Player : MonoBehaviour
     private void OnWeaponUnequipped() => 
         _weaponSwitcher.Disable();
 
-    private void OnTraderInteractionStarted() => 
+    private void OnTradingStarted(ITrader trader)
+    {
         _hud.UIInputPanel.SetActive(false);
+        _hud.UIEquipmentPanel.SetActive(false);
+    }
 
-    private void OnTraderInteractionFinished() => 
-        _hud.UIInputPanel.SetActive(true);
+    private void OnTradingFinished()
+    {
+        _hud.ToggleEquipmentPanel(false);
+    }
 }

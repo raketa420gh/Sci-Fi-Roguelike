@@ -21,8 +21,10 @@ public class UIPlayerInput : UIPanel
         ToggleInteractButton(false);
     }
 
-    private void ToggleInteractButton(bool isAvailable) => 
+    private void ToggleInteractButton(bool isAvailable)
+    {
         _interactButton.gameObject.SetActive(isAvailable);
+    }
 
     private void OnInteractionAvailable(bool isAvailable) => 
         ToggleInteractButton(isAvailable);

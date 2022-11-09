@@ -1,17 +1,9 @@
-using System;
-
-public class WeaponSingleItem : IInventoryItem
+public class WeaponSingleItem : InventoryItem
 {
-    public IInventoryItemInfo Info { get; }
-    public IInventoryItemState State { get; }
-    public Type Type => GetType();
-
-    public WeaponSingleItem(IInventoryItemInfo info)
+    public WeaponSingleItem(IInventoryItemInfo info) : base(info)
     {
-        Info = info;
-        State = new InventoryItemState();
     }
     
-    public IInventoryItem Clone() => 
+    public override IInventoryItem Clone() => 
         new WeaponSingleItem(Info) { State = { Amount = State.Amount } };
 }

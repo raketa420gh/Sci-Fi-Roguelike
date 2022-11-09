@@ -1,17 +1,9 @@
-using System;
-
-public class JunkItem : IInventoryItem
+public class JunkItem : InventoryItem
 {
-    public IInventoryItemInfo Info { get; }
-    public IInventoryItemState State { get; }
-    public Type Type => GetType();
-
-    public JunkItem(IInventoryItemInfo info)
+    public JunkItem(IInventoryItemInfo info) : base(info)
     {
-        Info = info;
-        State = new InventoryItemState();
     }
     
-    public IInventoryItem Clone() => 
+    public override IInventoryItem Clone() => 
         new JunkItem(Info) { State = { Amount = State.Amount } };
 }

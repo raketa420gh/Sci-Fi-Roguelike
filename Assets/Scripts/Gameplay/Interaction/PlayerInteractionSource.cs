@@ -3,46 +3,51 @@ using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
 
-public class PlayerInteractionSource : MonoBehaviour, IInteractionSource
+public class PlayerInteractionSource : MonoBehaviour, IInteractionSource, IBuyer
 {
     public event Action<bool> OnAvailable;
-    public event Action OnTraderInteractionStarted;
-    public event Action OnTraderInteractionFinished;
+
+    public event Action<ITrader> OnTradingStarted;
+    public event Action OnTradingFinished;
 
     private SphereCollider _collider;
+
     private IInteractable _currentInteractable;
 
-    private void Awake() => 
+    private void Awake() =>
         _collider = GetComponent<SphereCollider>();
 
     private void OnTriggerEnter(Collider other)
     {
         var interactable = other.GetComponent<IInteractable>();
 
-        if (interactable == null) 
-            return;
-        
-        SelectInteractable(interactable);
+        if (interactable != null)
+            SelectInteractable(interactable);
     }
 
     private void OnTriggerExit(Collider other)
     {
         var interactable = other.GetComponent<IInteractable>();
 
-        if (interactable == null) 
-            return;
-        if (_currentInteractable == interactable)
-            DeselectInteractable();
+        if (interactable != null)
+            if (_currentInteractable == interactable)
+                DeselectInteractable();
     }
 
     public void Interact()
     {
         _currentInteractable?.Interact(this);
-        
-        if (_currentInteractable as Trader)
-            OnTraderInteractionStarted?.Invoke();
-        
-        DeselectInteractable();
+
+        if (_currentInteractable is ITrader trader)
+        {
+            trader.StartTrading(this);
+            OnTradingStarted?.Invoke(trader);
+        }
+    }
+
+    public void FinishTrading()
+    {
+        OnTradingFinished?.Invoke();
     }
 
     private void SelectInteractable(IInteractable interactable)

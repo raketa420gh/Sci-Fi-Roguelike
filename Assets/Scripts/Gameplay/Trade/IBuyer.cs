@@ -1,4 +1,9 @@
+using System;
+
 public interface IBuyer
 {
-    void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost);
+    event Action<ITrader> OnTradingStarted;
+    event Action OnTradingFinished;
+
+    void FinishTrading();
 }
