@@ -9,6 +9,7 @@ public class PlayerInteractionSource : MonoBehaviour, IInteractionSource, IBuyer
 
     public event Action<ITrader> OnTradingStarted;
     public event Action OnTradingFinished;
+    public event Action<IInventoryItem> OnBought;
 
     private SphereCollider _collider;
 
@@ -48,6 +49,11 @@ public class PlayerInteractionSource : MonoBehaviour, IInteractionSource, IBuyer
     public void FinishTrading()
     {
         OnTradingFinished?.Invoke();
+    }
+
+    public void Buy(IInventoryItem item)
+    {
+        OnBought?.Invoke(item);
     }
 
     private void SelectInteractable(IInteractable interactable)

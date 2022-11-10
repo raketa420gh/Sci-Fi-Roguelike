@@ -34,6 +34,7 @@ public class UITradingPanel : UIPanel
 
     private void Buy(StoreProductSlot productSlot)
     {
+        productSlot.gameObject.SetActive(false);
         OnBuyButtonClicked?.Invoke(productSlot);
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
@@ -57,6 +56,24 @@ public class Trader : MonoBehaviour, ITrader
 
     private void OnProductBuy(StoreProductSlot productSlot)
     {
-        
+        if (_currentBuyer != null)
+        {
+            var itemData = productSlot.ItemData;
+            var itemID = itemData.ID;
+            
+            if (itemID == ItemConstants.WeaponSingle)
+            {
+                var inventoryItem = new WeaponSingleItem(itemData) { State = { Amount = 1 } };
+                _currentBuyer.Buy(inventoryItem);
+            }
+
+            if (itemID == ItemConstants.WeaponDouble)
+            {
+                var inventoryItem = new WeaponDoubleItem(itemData) { State = { Amount = 1 } };
+                _currentBuyer.Buy(inventoryItem);
+            }
+            
+            productSlot.gameObject.SetActive(false);
+        }
     }
 }

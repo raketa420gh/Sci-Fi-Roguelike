@@ -11,6 +11,7 @@ public class StoreProductSlot : MonoBehaviour
     private InventoryItemData _itemData;
 
     public Button BuyButton => _buyButton;
+    public InventoryItemData ItemData => _itemData;
 
     public void Setup(InventoryItemData itemData)
     {
