@@ -1,17 +1,19 @@
 using System;
 
-public class JunkItem : IInventoryItem
+public abstract class InventoryItem : IInventoryItem
 {
     public IInventoryItemInfo Info { get; }
     public IInventoryItemState State { get; }
     public Type Type => GetType();
 
-    public JunkItem(IInventoryItemInfo info)
+    protected InventoryItem(IInventoryItemInfo info)
     {
         Info = info;
         State = new InventoryItemState();
     }
     
-    public IInventoryItem Clone() => 
-        new JunkItem(Info) { State = { Amount = State.Amount } };
+    public virtual IInventoryItem Clone()
+    {
+        return null;
+    }
 }

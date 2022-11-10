@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIInventoryController : UIPanel
+public class UIEquipmentPanel : UIPanel
 {
     [SerializeField] private List<UIInventorySlot> _uiEquipmentSlots;
     [SerializeField] private List<UIInventorySlot> _uiInventorySlots;

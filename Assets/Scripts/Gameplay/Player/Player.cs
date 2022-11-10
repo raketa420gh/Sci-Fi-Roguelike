@@ -6,26 +6,24 @@ using Zenject;
 [RequireComponent(typeof(PlayerInteractionSource))]
 [RequireComponent(typeof(PlayerWeaponSwitcher))]
 
-public class Player : MonoBehaviour, IBuyer
+public class Player : MonoBehaviour
 {
     public event Action<Player> OnCreated;
     public event Action<Player> OnDead;
+    
+    public ActiveState ActiveState;
+    public EquipmentState EquipmentState;
 
     [SerializeField] private Transform _body;
-
     private CharacterMovement _characterMovement;
     private PlayerWeaponSwitcher _weaponSwitcher;
-    private IInteractionSource _interactionSource;
+    private PlayerInteractionSource _interactionSource;
     private ICurrencyStorage _currencyStorage;
     private IInputService _inputService;
     private IInventory _inventory;
-    private UIInventoryController _uiInventoryController;
+    private HUD _hud;
     private CameraController _cameraController;
     private StateMachine _stateMachine;
-    public ActiveState ActiveState;
-    public EquipmentState EquipmentState;
-    
-    public IInteractionSource InteractionSource => _interactionSource;
 
     [Inject]
     public void Construct(IInputService inputService)
@@ -33,8 +31,12 @@ public class Player : MonoBehaviour, IBuyer
         _inputService = inputService;
 
         _characterMovement = GetComponent<CharacterMovement>();
-        _interactionSource = GetComponent<IInteractionSource>();
+        _interactionSource = GetComponent<PlayerInteractionSource>();
         _weaponSwitcher = GetComponent<PlayerWeaponSwitcher>();
+
+        _interactionSource.OnTradingStarted += OnTradingStarted;
+        _interactionSource.OnTradingFinished += OnTradingFinished;
+        _interactionSource.OnBought += OnItemBought;
     }
 
     private void OnEnable()
@@ -46,8 +48,8 @@ public class Player : MonoBehaviour, IBuyer
 
     private void OnDisable()
     {
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped -= OnWeaponEquipped;
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped -= OnWeaponUnequipped;
+        _hud.UIEquipmentPanel.UIInventoryWithSlots.OnWeaponEquipped -= OnWeaponEquipped;
+        _hud.UIEquipmentPanel.UIInventoryWithSlots.OnWeaponUnequipped -= OnWeaponUnequipped;
         
         OnDead?.Invoke(this);
     }
@@ -61,48 +63,33 @@ public class Player : MonoBehaviour, IBuyer
         pickableItem?.Pick(_inventory);
     }
 
-    public void Setup(UIInventoryController inventoryController, CameraController cameraController)
+    public void Setup(HUD hud, CameraController cameraController)
     {
-        SetupInventory(inventoryController);
+        SetupHUD(hud);
         SetupCameras(cameraController);
-        
-        InitializeStates();
-    }
+        SetupInventory();
 
-    public void Buy(IInventoryItem purchasedItem, ICurrencyStorage currencyStorage, int cost = 1)
-    {
-        _currencyStorage.ChangeAmount(-cost);
-        _inventory.TryToAdd(this, purchasedItem);
+        InitializeStates();
     }
 
     private void InitializeStates()
     {
         _stateMachine = new StateMachine();
 
-        ActiveState = new ActiveState(this, 
-            _stateMachine,
-            _inputService, 
-            _interactionSource, 
-            _characterMovement, 
-            _weaponSwitcher, 
-            _body,
-            _cameraController);
+        ActiveState = new ActiveState(this, _stateMachine, _inputService, _interactionSource, 
+            _characterMovement, _weaponSwitcher, _body, _cameraController);
         
-        EquipmentState = new EquipmentState(this, 
-            _stateMachine,
-            _inputService,
-            _cameraController);
+        EquipmentState = new EquipmentState(this, _stateMachine, _inputService, _cameraController);
         
         _stateMachine.ChangeState(ActiveState);
     }
 
-    private void SetupInventory(UIInventoryController uiInventoryController)
+    private void SetupHUD(HUD hud)
     {
-        _uiInventoryController = uiInventoryController;
-        _inventory = uiInventoryController.UIInventoryWithSlots.Inventory;
-
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
-        _uiInventoryController.UIInventoryWithSlots.OnWeaponUnequipped += OnWeaponUnequipped;
+        _hud = hud;
+        hud.UIInputPanel.Setup(_interactionSource);
+        hud.UIEquipmentPanel.Setup();
+        hud.ToggleEquipmentPanel(false);
     }
 
     private void SetupCameras(CameraController cameraController)
@@ -117,6 +104,14 @@ public class Player : MonoBehaviour, IBuyer
         InitializeStates();
     }
 
+    private void SetupInventory()
+    {
+        _inventory = _hud.UIEquipmentPanel.UIInventoryWithSlots.Inventory;
+
+        _hud.UIEquipmentPanel.UIInventoryWithSlots.OnWeaponEquipped += OnWeaponEquipped;
+        _hud.UIEquipmentPanel.UIInventoryWithSlots.OnWeaponUnequipped += OnWeaponUnequipped;
+    }
+
     private void OnWeaponEquipped(Type weaponType)
     {
         if (weaponType == typeof(WeaponSingleItem))
@@ -128,4 +123,20 @@ public class Player : MonoBehaviour, IBuyer
 
     private void OnWeaponUnequipped() => 
         _weaponSwitcher.Disable();
+
+    private void OnTradingStarted(ITrader trader)
+    {
+        _hud.UIInputPanel.SetActive(false);
+        _hud.UIEquipmentPanel.SetActive(false);
+    }
+
+    private void OnTradingFinished()
+    {
+        _hud.ToggleEquipmentPanel(false);
+    }
+
+    private void OnItemBought(IInventoryItem item)
+    {
+        _inventory.TryToAdd(this, item);
+    }
 }

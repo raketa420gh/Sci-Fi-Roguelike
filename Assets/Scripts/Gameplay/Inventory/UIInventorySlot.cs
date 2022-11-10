@@ -4,14 +4,14 @@ using UnityEngine.EventSystems;
 public class UIInventorySlot : UISlot
 {
     [SerializeField] private UIInventoryItem _uiInventoryItem;
-    [SerializeField] private UIInventoryController uiInventoryController;
+    [SerializeField] private UIEquipmentPanel uiEquipmentPanel;
     
     public IInventorySlot Slot { get; private set; }
 
     private void Awake()
     {
-        if (uiInventoryController == null)
-            uiInventoryController = GetComponentInParent<UIInventoryController>();
+        if (uiEquipmentPanel == null)
+            uiEquipmentPanel = GetComponentInParent<UIEquipmentPanel>();
     }
 
     public void SetSlot(IInventorySlot slot)
@@ -24,7 +24,7 @@ public class UIInventorySlot : UISlot
         var otherItemUI = eventData.pointerDrag.GetComponent<UIInventoryItem>();
         var otherSlotUI = otherItemUI.GetComponentInParent<UIInventorySlot>();
         var otherSlot = otherSlotUI.Slot;
-        var inventory = uiInventoryController.UIInventoryWithSlots.Inventory;
+        var inventory = uiEquipmentPanel.UIInventoryWithSlots.Inventory;
         
         inventory.TransitFromSlotToSlot(this, otherSlot, Slot);
 
